@@ -1,0 +1,11 @@
+version: '3.1'
+
+services:
+  swoole:
+    container_name: swoole
+    image: phpswoole/swoole
+    command: php /usr/src/code/tests/servers/Swoole/server.php
+    volumes:
+      - ./:/usr/src/code
+    ports:
+      - "8001:80"

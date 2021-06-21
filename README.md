@@ -26,7 +26,7 @@ use Utopia\WebSocket;
 $adapter = new WebSocket\Adapter\Swoole();
 $adapter->setConfig('max_connections', 128);
 
-$server = new WebSocket($adapter);
+$server = new WebSocket\Server($adapter);
 $server->onStart(/* callback */);
 $server->onWorkerStart(/* callback */);
 $server->onMessage(/* callback */);

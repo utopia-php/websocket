@@ -1,5 +1,5 @@
 <?php
-namespace Utopia;
+namespace Utopia\WebSocket;
 
 use Utopia\WebSocket\Adapter;
 
@@ -13,7 +13,7 @@ use Utopia\WebSocket\Adapter;
  * @version 1.0 RC1
  * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
  */
-class WebSocket
+class Server
 {
     protected Adapter $adapter;
     protected string $host;
@@ -66,9 +66,9 @@ class WebSocket
     /**
      * Is called when the Server starts.
      * @param callable $callback 
-     * @return WebSocket 
+     * @return Server 
      */
-    public function onStart(callable $callback): WebSocket
+    public function onStart(callable $callback): Server
     {
         $this->adapter->onStart($callback);
         return $this;
@@ -77,9 +77,9 @@ class WebSocket
     /**
      * Is called when a Worker starts.
      * @param callable $callback 
-     * @return WebSocket 
+     * @return Server 
      */
-    public function onWorkerStart(callable $callback): WebSocket
+    public function onWorkerStart(callable $callback): Server
     {
         $this->adapter->onWorkerStart($callback);
         return $this;
@@ -88,9 +88,9 @@ class WebSocket
     /**
      * Is called when a connection is established.
      * @param callable $callback 
-     * @return WebSocket 
+     * @return Server 
      */
-    public function onOpen(callable $callback): WebSocket
+    public function onOpen(callable $callback): Server
     {
         $this->adapter->onOpen($callback);
         return $this;
@@ -99,9 +99,9 @@ class WebSocket
     /**
      * Is called when a message is received.
      * @param callable $callback 
-     * @return WebSocket 
+     * @return Server 
      */
-    public function onMessage(callable $callback): WebSocket
+    public function onMessage(callable $callback): Server
     {
         $this->adapter->onMessage($callback);
         return $this;
@@ -110,9 +110,9 @@ class WebSocket
     /**
      * Is called when a connection is closed.
      * @param callable $callback 
-     * @return WebSocket 
+     * @return Server 
      */
-    public function onClose(callable $callback): WebSocket
+    public function onClose(callable $callback): Server
     {
         $this->adapter->onClose($callback);
         return $this;
