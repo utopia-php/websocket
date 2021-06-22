@@ -9,9 +9,9 @@
          stopOnFailure="false"
         >
     <testsuites>
-        <testsuite name="Unit">
+        <!-- <testsuite name="Unit">
             <directory>./tests/unit/</directory>
-        </testsuite>
+        </testsuite> -->
         <testsuite name="E2E">
             <directory>./tests/e2e/</directory>
         </testsuite>
