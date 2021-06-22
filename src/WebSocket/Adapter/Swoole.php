@@ -95,4 +95,10 @@ class Swoole extends Adapter
         $this->config['websocket_compression'] = $enabled;
         return $this;
     }
+
+    public function setWorkerNumber(int $num): self
+    {
+        $this->config['worker_num'] = $num;
+        return $this;
+    }
 }

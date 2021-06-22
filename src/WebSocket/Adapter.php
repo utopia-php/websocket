@@ -87,4 +87,5 @@ abstract class Adapter
 
     public abstract function setPackageMaxLength(int $bytes): self;
     public abstract function setCompressionEnabled(bool $enabled): self;
+    public abstract function setWorkerNumber(int $num): self;
 }

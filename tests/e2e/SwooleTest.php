@@ -28,4 +28,25 @@ class SwooleTest extends TestCase
         $this->expectException(ConnectionException::class);
         $client->close();
     }
+
+    public function testMultipleConnections()
+    {
+        $clientA = $this->getWebsocket('localhost', 8001);
+        $clientB = $this->getWebsocket('localhost', 8001);
+        $clientA->send('ping');
+        $this->assertEquals('pong', $clientA->receive());
+        $clientB->send('pong');
+        $this->assertEquals('ping', $clientB->receive());
+
+        $clientA->send('broadcast');
+        $this->assertEquals('broadcast', $clientA->receive());
+        $this->assertEquals('broadcast', $clientB->receive());
+
+        $clientB->send('broadcast');
+        $this->assertEquals('broadcast', $clientA->receive());
+        $this->assertEquals('broadcast', $clientB->receive());
+
+        $clientA->close();
+        $clientB->close();
+    }
 }
