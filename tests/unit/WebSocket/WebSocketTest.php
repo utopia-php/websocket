@@ -25,6 +25,6 @@ class WebSocketTest extends TestCase
 
     public function testConfig()
     {
-        $adapter = new WebSocket\Adapter\Swoole();
+        $adapter = new WebSocket\Adapter\Swoole("0.0.0.0", 1337);
     }
 }
