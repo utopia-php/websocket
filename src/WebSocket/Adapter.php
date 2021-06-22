@@ -14,32 +14,12 @@ namespace Utopia\WebSocket;
 abstract class Adapter
 {
     protected array $config;
+    protected string $host;
+    protected int $port;
 
-    function __construct(array $config = []) {
-        $this->config = $config;
-    }
-
-    /**
-     * Returns configuration. Pass no argument to return the complete config.
-     * @param string $key 
-     * @return string|array 
-     */
-    public function getConfig(string $key = ''): mixed
-    {
-        return empty($key) ? $this->config : $this->config[$key];
-    }
-
-    /**
-     * Set config key.
-     * @param string $key 
-     * @param mixed $value 
-     * @return Adapter 
-     */
-    public function setConfig(string $key, mixed $value): Adapter
-    {
-        $this->config[$key] = $value;
-
-        return $this;
+    function __construct(string $host = '0.0.0.0', int $port = 80) {
+        $this->host = $host;
+        $this->port = $port;
     }
 
     /**
@@ -67,36 +47,38 @@ abstract class Adapter
     /**
      * Is called when the Server starts.
      * @param callable $callback 
-     * @return Adapter 
+     * @return self 
      */
-    public abstract function onStart(callable $callback): Adapter;
+    public abstract function onStart(callable $callback): self;
 
     /**
      * Is called when a Worker starts.
      * @param callable $callback 
-     * @return Adapter 
+     * @return self 
      */
-    public abstract function onWorkerStart(callable $callback): Adapter;
+    public abstract function onWorkerStart(callable $callback): self;
 
     /**
      * Is called when a connection is established.
      * @param callable $callback 
-     * @return Adapter 
+     * @return self 
      */
-    public abstract function onOpen(callable $callback): Adapter;
+    public abstract function onOpen(callable $callback): self;
 
     /**
      * Is called when a message is received.
      * @param callable $callback 
-     * @return Adapter 
+     * @return self 
      */
-    public abstract function onMessage(callable $callback): Adapter;
+    public abstract function onMessage(callable $callback): self;
 
     /**
      * Is called when a connection is closed.
      * @param callable $callback 
-     * @return Adapter 
+     * @return self 
      */
-    public abstract function onClose(callable $callback): Adapter;
+    public abstract function onClose(callable $callback): self;
 
+    public abstract function setPackageMaxLength(int $bytes): self;
+    public abstract function setCompressionEnabled(bool $enabled): self;
 }

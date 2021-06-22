@@ -15,12 +15,10 @@ class Swoole extends Adapter
     protected string $host;
     protected int $port;
 
-    public function __construct(array $config = [], string $host = '0.0.0.0', int $port = 80)
+    public function __construct(string $host = '0.0.0.0', int $port = 80)
     {
-        parent::__construct($config);
+        parent::__construct($host, $port);
 
-        $this->host = $host;
-        $this->port = $port;
         $this->server = new \Swoole\WebSocket\Server($this->host, $this->port);
     }
 
@@ -51,33 +49,45 @@ class Swoole extends Adapter
         $this->server->close($connection);
     }
 
-    public function onStart(callable $callback): Swoole
+    public function onStart(callable $callback): self
     {
         $this->server->on('start', $callback);
         return $this;
     }
 
-    public function onWorkerStart(callable $callback): Swoole
+    public function onWorkerStart(callable $callback): self
     {
         $this->server->on('workerStart', $callback);
         return $this;
     }
 
-    public function onOpen(callable $callback): Swoole
+    public function onOpen(callable $callback): self
     {
         $this->server->on('open', $callback);
         return $this;
     }
 
-    public function onMessage(callable $callback): Swoole
+    public function onMessage(callable $callback): self
     {
         $this->server->on('message', $callback);
         return $this;
     }
 
-    public function onClose(callable $callback): Swoole
+    public function onClose(callable $callback): self
     {
         $this->server->on('close', $callback);
+        return $this;
+    }
+
+    public function setPackageMaxLength(int $bytes): self
+    {
+        $this->config['package_max_length'] = $bytes;
+        return $this;
+    }
+
+    public function setCompressionEnabled(bool $enabled): self
+    {
+        $this->config['websocket_compression'] = $enabled;
         return $this;
     }
 }

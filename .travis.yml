@@ -6,7 +6,7 @@ notifications:
     - team@appwrite.io
 
 before_script: 
-  - pecl install swoole
+  - pecl install --configureoptions 'enable-sockets="no" enable-openssl="yes" enable-http2="yes" enable-mysqlnd="yes" enable-swoole-json="no" enable-swoole-curl="yes"' swoole
   - composer install --ignore-platform-reqs
 
 script:

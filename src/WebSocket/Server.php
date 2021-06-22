@@ -16,20 +16,14 @@ use Utopia\WebSocket\Adapter;
 class Server
 {
     protected Adapter $adapter;
-    protected string $host;
-    protected int $port;
 
     /**
      * Creates an instance of a WebSocker server.
      * @param Adapter $adapter 
-     * @param string $host 
-     * @param int $port 
      */
-    public function __construct(Adapter $adapter, string $host = '0.0.0.0', int $port = 80)
+    public function __construct(Adapter $adapter)
     {
         $this->adapter = $adapter;
-        $this->host = $host;
-        $this->port = $port;
     }
 
     /**
@@ -66,9 +60,9 @@ class Server
     /**
      * Is called when the Server starts.
      * @param callable $callback 
-     * @return Server 
+     * @return self 
      */
-    public function onStart(callable $callback): Server
+    public function onStart(callable $callback): self
     {
         $this->adapter->onStart($callback);
         return $this;
@@ -77,9 +71,9 @@ class Server
     /**
      * Is called when a Worker starts.
      * @param callable $callback 
-     * @return Server 
+     * @return self 
      */
-    public function onWorkerStart(callable $callback): Server
+    public function onWorkerStart(callable $callback): self
     {
         $this->adapter->onWorkerStart($callback);
         return $this;
@@ -88,9 +82,9 @@ class Server
     /**
      * Is called when a connection is established.
      * @param callable $callback 
-     * @return Server 
+     * @return self 
      */
-    public function onOpen(callable $callback): Server
+    public function onOpen(callable $callback): self
     {
         $this->adapter->onOpen($callback);
         return $this;
@@ -99,9 +93,9 @@ class Server
     /**
      * Is called when a message is received.
      * @param callable $callback 
-     * @return Server 
+     * @return self 
      */
-    public function onMessage(callable $callback): Server
+    public function onMessage(callable $callback): self
     {
         $this->adapter->onMessage($callback);
         return $this;
@@ -110,9 +104,9 @@ class Server
     /**
      * Is called when a connection is closed.
      * @param callable $callback 
-     * @return Server 
+     * @return self 
      */
-    public function onClose(callable $callback): Server
+    public function onClose(callable $callback): self
     {
         $this->adapter->onClose($callback);
         return $this;
