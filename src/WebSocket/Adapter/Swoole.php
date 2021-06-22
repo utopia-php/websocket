@@ -28,6 +28,11 @@ class Swoole extends Adapter
         $this->server->start();
     }
 
+    public function shutdown(): void
+    {
+        $this->server->shutdown();
+    }
+
     public function send(array $connections, string $message): void
     {
         foreach ($connections as $connection) {

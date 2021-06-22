@@ -29,6 +29,12 @@ abstract class Adapter
     public abstract function start(): void;
 
     /**
+     * Shuts down the Server.
+     * @return void 
+     */
+    public abstract function shutdown(): void;
+
+    /**
      * Sends a message to passed connections.
      * @param array $connections Array of connection ID's.
      * @param string $message Message.

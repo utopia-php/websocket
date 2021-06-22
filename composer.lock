@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f0b7e9c2eef3d3926231a28979229e62",
+    "content-hash": "bafff80171bf68c099217d4d6889e84a",
     "packages": [],
     "packages-dev": [
         {
@@ -3500,6 +3500,55 @@
                 }
             ],
             "time": "2021-06-06T09:51:56+00:00"
+        },
+        {
+            "name": "textalk/websocket",
+            "version": "1.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Textalk/websocket-php.git",
+                "reference": "b93249453806a2dd46495de46d76fcbcb0d8dee8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Textalk/websocket-php/zipball/b93249453806a2dd46495de46d76fcbcb0d8dee8",
+                "reference": "b93249453806a2dd46495de46d76fcbcb0d8dee8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 | ^8.0",
+                "psr/log": "^1.0"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^8.0|^9.0",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WebSocket\\": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "ISC"
+            ],
+            "authors": [
+                {
+                    "name": "Fredrik Liljegren"
+                },
+                {
+                    "name": "Sören Jensen",
+                    "email": "soren@abicart.se"
+                }
+            ],
+            "description": "WebSocket client and server",
+            "support": {
+                "issues": "https://github.com/Textalk/websocket-php/issues",
+                "source": "https://github.com/Textalk/websocket-php/tree/1.5.2"
+            },
+            "time": "2021-02-12T15:39:23+00:00"
         },
         {
             "name": "theseer/tokenizer",

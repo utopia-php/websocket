@@ -36,6 +36,15 @@ class Server
     }
 
     /**
+     * Shuts down the WebSocket server.
+     * @return void 
+     */
+    public function shutdown(): void
+    {
+        $this->adapter->shutdown();
+    }
+
+    /**
      * Sends a message to passed connections.
      * @param array $connections Array of connection ID's.
      * @param string $message Message.
