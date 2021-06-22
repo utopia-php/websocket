@@ -13,9 +13,9 @@ namespace Utopia\WebSocket;
  */
 abstract class Adapter
 {
-    protected array $config;
     protected string $host;
     protected int $port;
+    protected array $config = [];
 
     function __construct(string $host = '0.0.0.0', int $port = 80) {
         $this->host = $host;
