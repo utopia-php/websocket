@@ -61,7 +61,7 @@ class Server
      * @param int $code Close Code.
      * @return void 
      */
-    public function close(string $connection, int $code): void
+    public function close($connection, int $code): void
     {
         $this->adapter->close($connection, $code);
     }

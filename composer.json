@@ -25,6 +25,7 @@
         "swoole/ide-helper": "4.6.6",
         "textalk/websocket": "1.5.2",
         "phpunit/phpunit": "^9.5.5",
-        "vimeo/psalm": "^4.8.1"
+        "vimeo/psalm": "^4.8.1",
+        "workerman/workerman": "^4.0"
     }
 }

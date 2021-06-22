@@ -4,12 +4,12 @@ use WebSocket\Client as WebSocketClient;
 use WebSocket\ConnectionException;
 use WebSocket\TimeoutException;
 
-class SwooleTest extends TestCase
+class WorkermanTest extends TestCase
 {
     private function getWebsocket(string $server, int $port): WebSocketClient
     {
         return new WebSocketClient('ws://'.$server.':'.$port.'/v1/realtime', [
-            'timeout' => 10,
+            'timeout' => 5,
         ]);
     }
 
@@ -19,7 +19,7 @@ class SwooleTest extends TestCase
 
     public function testSingleConnection()
     {
-        $client = $this->getWebsocket('localhost', 8001);
+        $client = $this->getWebsocket('localhost', 8002);
         $client->send('ping');
         $this->assertEquals('pong', $client->receive());
 
@@ -32,9 +32,8 @@ class SwooleTest extends TestCase
 
     public function testMultipleConnections()
     {
-        $clientA = $this->getWebsocket('localhost', 8001);
-        $clientB = $this->getWebsocket('localhost', 8001);
-
+        $clientA = $this->getWebsocket('localhost', 8002);
+        $clientB = $this->getWebsocket('localhost', 8002);
         $clientA->send('ping');
         $this->assertEquals('pong', $clientA->receive());
         $clientB->send('pong');
