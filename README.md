@@ -24,7 +24,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 use Utopia\WebSocket;
 
 $adapter = new WebSocket\Adapter\Swoole();
-$adapter->setConfig('max_connections', 128);
+$adapter->setPackageMaxLength(64000);
 
 $server = new WebSocket\Server($adapter);
 $server->onStart(/* callback */);
