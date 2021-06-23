@@ -24,10 +24,12 @@ $server->onWorkerStart(function ($server) {
 });
 
 $server->onOpen(function (SwooleServer $server, Request $request) {
+    echo "connected ", $request->fd, PHP_EOL;
     $server->connections[$request->fd] = true;
 });
 
 $server->onClose(function (SwooleServer $server, int $fd) {
+    echo "disconnected ", $fd, PHP_EOL;
     unset($server->connections[$fd]);
 });
 
@@ -42,7 +44,6 @@ $server->onMessage(function (SwooleServer $swooleServer, Frame $frame) use ($ser
             $server->send([$frame->fd], 'ping');
             break;
         case 'broadcast':
-            var_dump(array_keys($swooleServer->connections));
             $server->send(array_keys($swooleServer->connections), 'broadcast');
             break;
         case 'disconnect':

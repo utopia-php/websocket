@@ -4,12 +4,12 @@ use WebSocket\Client as WebSocketClient;
 use WebSocket\ConnectionException;
 use WebSocket\TimeoutException;
 
-class WorkermanTest extends TestCase
+class SwooleTest extends TestCase
 {
     private function getWebsocket(string $server, int $port): WebSocketClient
     {
         return new WebSocketClient('ws://'.$server.':'.$port.'/v1/realtime', [
-            'timeout' => 5,
+            'timeout' => 10,
         ]);
     }
 
@@ -17,37 +17,47 @@ class WorkermanTest extends TestCase
     {
     }
 
-    public function testSingleConnection()
+    public function testSwoole(): void
     {
-        $client = $this->getWebsocket('localhost', 8002);
-        $client->send('ping');
-        $this->assertEquals('pong', $client->receive());
-
-        $this->assertEquals(true, $client->isConnected());
-        $client->send('disconnect');
-        $this->assertEquals('disconnect', $client->receive());
-        $this->expectException(Throwable::class);
-        $client->receive();
+        $this->testServer(8001);
     }
 
-    public function testMultipleConnections()
+    public function testWorkerman(): void
     {
-        $clientA = $this->getWebsocket('localhost', 8002);
-        $clientB = $this->getWebsocket('localhost', 8002);
+        $this->testServer(8002);
+    }
+
+    private function testServer(int $port)
+    {
+        $client = $this->getWebsocket('localhost', $port);
+        $client->send('ping');
+        $this->assertEquals('pong', $client->receive());
+        $this->assertEquals(true, $client->isConnected());
+
+        $clientA = $this->getWebsocket('localhost', $port);
+        $clientB = $this->getWebsocket('localhost', $port);
+
         $clientA->send('ping');
         $this->assertEquals('pong', $clientA->receive());
         $clientB->send('pong');
         $this->assertEquals('ping', $clientB->receive());
 
         $clientA->send('broadcast');
+        $this->assertEquals('broadcast', $client->receive());
         $this->assertEquals('broadcast', $clientA->receive());
         $this->assertEquals('broadcast', $clientB->receive());
 
         $clientB->send('broadcast');
+        $this->assertEquals('broadcast', $client->receive());
         $this->assertEquals('broadcast', $clientA->receive());
         $this->assertEquals('broadcast', $clientB->receive());
 
         $clientA->close();
         $clientB->close();
+
+        $client->send('disconnect');
+        $this->assertEquals('disconnect', $client->receive());
+        $this->expectException(Throwable::class);
+        $client->receive();
     }
 }

@@ -2,23 +2,18 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Swoole\Http\Request;
-use Swoole\Process;
-use Swoole\WebSocket\Frame;
-use Swoole\WebSocket\Server as SwooleServer;
 use Utopia\WebSocket;
-use Workerman\Connection\ConnectionInterface;
 use Workerman\Connection\TcpConnection;
 
 $adapter = new WebSocket\Adapter\Workerman();
 $server = new WebSocket\Server($adapter);
 
 $server->onOpen(function (TcpConnection $connection) {
-    echo "connected ", $connection->id;
+    echo "connected ", $connection->id, PHP_EOL;
 });
 
 $server->onClose(function (TcpConnection $connection) {
-    echo "disconnected ", $connection->id;
+    echo "disconnected ", $connection->id, PHP_EOL;
 });
 
 $server->onMessage(function (TcpConnection $connection, string $data) use ($server) {
