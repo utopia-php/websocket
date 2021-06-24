@@ -1,0 +1,31 @@
+{
+    "name": "utopia-php/websocket",
+    "description": "A simple abstraction for WebSocket servers.",
+    "type": "library",
+    "keywords": ["php","framework", "upf", "utopia", "websocket"],
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Eldad Fux",
+            "email": "eldad@appwrite.io"
+        },
+        {
+            "name": "Torsten Dittmann",
+            "email": "torsten@appwrite.io"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"Utopia\\WebSocket\\": "src/WebSocket"}
+    },
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "swoole/ide-helper": "4.6.6",
+        "textalk/websocket": "1.5.2",
+        "phpunit/phpunit": "^9.5.5",
+        "vimeo/psalm": "^4.8.1",
+        "workerman/workerman": "^4.0"
+    }
+}

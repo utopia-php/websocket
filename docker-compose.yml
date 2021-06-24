@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+  swoole:
+    container_name: swoole
+    build: ./tests/servers/Swoole/.
+    command: php /usr/src/code/tests/servers/Swoole/server.php
+    volumes:
+      - ./:/usr/src/code
+    ports:
+      - "8001:80"
+  workerman:
+    container_name: workerman
+    build: ./tests/servers/Workerman/.
+    command: php /usr/src/code/tests/servers/Workerman/server.php start
+    volumes:
+      - ./:/usr/src/code
+    ports:
+      - "8002:80"
