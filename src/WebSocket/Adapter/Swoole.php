@@ -100,7 +100,7 @@ class Swoole extends Adapter
 
     public function onClose(callable $callback): self
     {
-        $this->server->on('close', function (int $fd) use ($callback) {
+        $this->server->on('close', function (Server $server, int $fd) use ($callback) {
             unset(self::$connections[$fd]);
 
             call_user_func($callback, $fd);
