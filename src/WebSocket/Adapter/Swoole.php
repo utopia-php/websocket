@@ -3,6 +3,7 @@
 namespace Utopia\WebSocket\Adapter;
 
 use Swoole\Http\Request;
+use Swoole\Process;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 use Utopia\WebSocket\Adapter;
@@ -63,6 +64,10 @@ class Swoole extends Adapter
     {
         $this->server->on('start', function () use ($callback) {
             call_user_func($callback);
+
+            Process::signal(2, function () {
+                $this->shutdown();
+            });
         });
         return $this;
     }
