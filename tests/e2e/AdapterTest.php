@@ -1,8 +1,6 @@
 <?php
 use PHPUnit\Framework\TestCase;
 use WebSocket\Client as WebSocketClient;
-use WebSocket\ConnectionException;
-use WebSocket\TimeoutException;
 
 class SwooleTest extends TestCase
 {
