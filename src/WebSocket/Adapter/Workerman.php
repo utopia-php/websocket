@@ -68,6 +68,7 @@ class Workerman extends Adapter
         $this->server->onConnect = function (mixed $connection) use ($callback): void {
             $connection->onWebSocketConnect = function(TcpConnection $connection) use ($callback): void
             {
+                /** @var array $_SERVER */
                 call_user_func($callback, $connection->id, $_SERVER);
             };
         };
