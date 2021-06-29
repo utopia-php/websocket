@@ -6,7 +6,7 @@ class SwooleTest extends TestCase
 {
     private function getWebsocket(string $server, int $port): WebSocketClient
     {
-        return new WebSocketClient('ws://'.$server.':'.$port.'/v1/realtime', [
+        return new WebSocketClient('ws://'.$server.':'.$port, [
             'timeout' => 10,
         ]);
     }
