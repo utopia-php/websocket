@@ -80,7 +80,7 @@ class Swoole extends Adapter
         $this->server->on('open', function (Server $server, Request $request) use ($callback) {
             self::$connections[$request->fd] = true;
 
-            call_user_func($callback, $request->fd, $request->header);
+            call_user_func($callback, $request->fd, $request);
         });
         return $this;
     }

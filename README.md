@@ -33,7 +33,7 @@ $server->onStart(function () {
 $server->onWorkerStart(function (int $workerId) {
     echo "Worker {$workerId} started!";
 });
-$server->onOpen(function (int $connection, array $headers) {
+$server->onOpen(function (int $connection, $request) {
     echo "Connection {$connection} established!";
 });
 $server->onMessage(function (int $connection, string $message) {

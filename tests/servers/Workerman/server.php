@@ -13,7 +13,7 @@ $server
     ->onWorkerStart(function (int $workerId) {
         echo "worker started ", $workerId, PHP_EOL;
     })
-    ->onOpen(function (int $connection, array $headers) {
+    ->onOpen(function (int $connection, array $request) {
         echo "connected ", $connection, PHP_EOL;
     })
     ->onClose(function (int $connection) {

@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
+use Swoole\Http\Request;
 use Utopia\WebSocket;
 
 $adapter = new WebSocket\Adapter\Swoole();
@@ -13,7 +14,7 @@ $server
     ->onWorkerStart(function (int $workerId) {
         echo "worker started ", $workerId, PHP_EOL;
     })
-    ->onOpen(function (int $connection, array $headers) {
+    ->onOpen(function (int $connection, Request $request) {
         echo "connected ", $connection, PHP_EOL;
     })
     ->onClose(function (int $connection) {
