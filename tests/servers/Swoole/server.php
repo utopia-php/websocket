@@ -2,10 +2,6 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Swoole\Http\Request;
-use Swoole\Process;
-use Swoole\WebSocket\Frame;
-use Swoole\WebSocket\Server as SwooleServer;
 use Utopia\WebSocket;
 
 $adapter = new WebSocket\Adapter\Swoole();
@@ -13,42 +9,32 @@ $adapter->setWorkerNumber(1); // Important for tests
 
 $server = new WebSocket\Server($adapter);
 
-$server->onStart(function ($server) {
-    echo "Server Started.";
-
-    Process::signal(2, function () use ($server) {
-        $server->shutdown();
-    });
-});
-
 $server
-    ->onWorkerStart(function ($server) {
-        $server->connections = [];
+    ->onWorkerStart(function (int $workerId) {
+        echo "worker started ", $workerId, PHP_EOL;
     })
-    ->onOpen(function (SwooleServer $server, Request $request) {
-        echo "connected ", $request->fd, PHP_EOL;
-        $server->connections[$request->fd] = true;
+    ->onOpen(function (int $connection, array $headers) {
+        echo "connected ", $connection, PHP_EOL;
     })
-    ->onClose(function (SwooleServer $server, int $fd) {
-        echo "disconnected ", $fd, PHP_EOL;
-        unset($server->connections[$fd]);
+    ->onClose(function (int $connection) {
+        echo "disconnected ", $connection, PHP_EOL;
     })
-    ->onMessage(function (SwooleServer $swooleServer, Frame $frame) use ($server) {
-        echo $frame->data, PHP_EOL;
+    ->onMessage(function (int $connection, string $message) use ($server) {
+        echo $message, PHP_EOL;
 
-        switch ($frame->data) {
+        switch ($message) {
             case 'ping':
-                $server->send([$frame->fd], 'pong');
+                $server->send([$connection], 'pong');
                 break;
             case 'pong':
-                $server->send([$frame->fd], 'ping');
+                $server->send([$connection], 'ping');
                 break;
             case 'broadcast':
-                $server->send(array_keys($swooleServer->connections), 'broadcast');
+                $server->send($server->getConnections(), 'broadcast');
                 break;
             case 'disconnect':
-                $server->send([$frame->fd], 'disconnect');
-                $server->close($frame->fd, 1000);
+                $server->send([$connection], 'disconnect');
+                $server->close($connection, 1000);
                 break;
         }
     })

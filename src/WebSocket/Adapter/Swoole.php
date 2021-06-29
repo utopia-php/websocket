@@ -2,6 +2,9 @@
 
 namespace Utopia\WebSocket\Adapter;
 
+use Swoole\Http\Request;
+use Swoole\WebSocket\Frame;
+use Swoole\WebSocket\Server;
 use Utopia\WebSocket\Adapter;
 
 /**
@@ -10,16 +13,18 @@ use Utopia\WebSocket\Adapter;
  */
 class Swoole extends Adapter
 {
-    protected \Swoole\WebSocket\Server $server;
+    protected Server $server;
 
     protected string $host;
     protected int $port;
+
+    private static array $connections = [];
 
     public function __construct(string $host = '0.0.0.0', int $port = 80)
     {
         parent::__construct($host, $port);
 
-        $this->server = new \Swoole\WebSocket\Server($this->host, $this->port);
+        $this->server = new Server($this->host, $this->port);
     }
 
     public function start(): void
@@ -56,31 +61,45 @@ class Swoole extends Adapter
 
     public function onStart(callable $callback): self
     {
-        $this->server->on('start', $callback);
+        $this->server->on('start', function () use ($callback) {
+            call_user_func($callback);
+        });
         return $this;
     }
 
     public function onWorkerStart(callable $callback): self
     {
-        $this->server->on('workerStart', $callback);
+        $this->server->on('workerStart', function(Server $server, int $workerId) use ($callback) {
+            call_user_func($callback, $workerId);
+        });
         return $this;
     }
 
     public function onOpen(callable $callback): self
     {
-        $this->server->on('open', $callback);
+        $this->server->on('open', function (Server $server, Request $request) use ($callback) {
+            self::$connections[$request->fd] = true;
+
+            call_user_func($callback, $request->fd, $request->header);
+        });
         return $this;
     }
 
     public function onMessage(callable $callback): self
     {
-        $this->server->on('message', $callback);
+        $this->server->on('message', function (Server $server, Frame $frame) use ($callback) {
+            call_user_func($callback, $frame->fd, $frame->data);
+        });
         return $this;
     }
 
     public function onClose(callable $callback): self
     {
-        $this->server->on('close', $callback);
+        $this->server->on('close', function (int $fd) use ($callback) {
+            unset(self::$connections[$fd]);
+
+            call_user_func($callback, $fd);
+        });
         return $this;
     }
 
@@ -100,5 +119,15 @@ class Swoole extends Adapter
     {
         $this->config['worker_num'] = $num;
         return $this;
+    }
+
+    public function getNative(): \Swoole\WebSocket\Server
+    {
+        return $this->server;
+    }
+
+    public function getConnections(): array
+    {
+        return array_keys(self::$connections);
     }
 }

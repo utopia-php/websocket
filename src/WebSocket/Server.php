@@ -120,4 +120,14 @@ class Server
         $this->adapter->onClose($callback);
         return $this;
     }
+
+    /**
+     * Returns all connections.
+     * @param callable $callback 
+     * @return self 
+     */
+    public function getConnections(): array
+    {
+        return $this->adapter->getConnections();
+    }
 }
