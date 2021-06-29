@@ -53,7 +53,7 @@ class Workerman extends Adapter
 
     public function onWorkerStart(callable $callback): self
     {
-        $this->server->onWorkerStart = function(Worker $worker) use ($callback) {
+        $this->server->onWorkerStart = function(Worker $worker) use ($callback): void {
             call_user_func($callback, $worker->id);
         };
         return $this;
@@ -61,8 +61,8 @@ class Workerman extends Adapter
 
     public function onOpen(callable $callback): self
     {
-        $this->server->onConnect = function (TcpConnection $connection) use ($callback) {
-            $connection->onWebSocketConnect = function($connection) use ($callback)
+        $this->server->onConnect = function (mixed $connection) use ($callback): void {
+            $connection->onWebSocketConnect = function(TcpConnection $connection) use ($callback): void
             {
                 $headers = [];
                 foreach ($_SERVER as $key => $value) {
@@ -78,7 +78,7 @@ class Workerman extends Adapter
 
     public function onMessage(callable $callback): self
     {
-        $this->server->onMessage = function (TcpConnection $connection, string $data) use ($callback) {
+        $this->server->onMessage = function (TcpConnection $connection, string $data) use ($callback): void {
             call_user_func($callback, $connection->id, $data);
         };
         return $this;
@@ -86,7 +86,7 @@ class Workerman extends Adapter
 
     public function onClose(callable $callback): self
     {
-        $this->server->onClose = function (TcpConnection $connection) use ($callback) {
+        $this->server->onClose = function (TcpConnection $connection) use ($callback): void {
             call_user_func($callback, $connection->id);
         };
         return $this;

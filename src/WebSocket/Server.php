@@ -124,7 +124,7 @@ class Server
     /**
      * Returns all connections.
      * @param callable $callback 
-     * @return self 
+     * @return array 
      */
     public function getConnections(): array
     {
