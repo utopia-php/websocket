@@ -17,6 +17,8 @@ class Workerman extends Adapter
     protected string $host;
     protected int $port;
 
+    private mixed $callbackOnStart;
+
     public function __construct(string $host = '0.0.0.0', int $port = 80)
     {
         parent::__construct($host, $port);
@@ -27,6 +29,7 @@ class Workerman extends Adapter
     public function start(): void
     {
         Worker::runAll();
+        call_user_func($this->callbackOnStart);
     }
 
     public function shutdown(): void
@@ -48,6 +51,7 @@ class Workerman extends Adapter
 
     public function onStart(callable $callback): self
     {
+        $this->callbackOnStart = $callback;
         return $this;
     }
 
