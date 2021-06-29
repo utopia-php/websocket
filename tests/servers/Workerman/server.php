@@ -14,7 +14,6 @@ $server
         echo "worker started ", $workerId, PHP_EOL;
     })
     ->onOpen(function (int $connection, array $headers) {
-        var_dump($headers);
         echo "connected ", $connection, PHP_EOL;
     })
     ->onClose(function (int $connection) {
