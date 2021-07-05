@@ -55,7 +55,7 @@ class Swoole extends Adapter
         }
     }
 
-    public function close(string $connection, int $code): void
+    public function close(int $connection, int $code): void
     {
         $this->server->close($connection);
     }

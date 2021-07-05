@@ -44,11 +44,11 @@ abstract class Adapter
 
     /**
      * Closes a connection.
-     * @param string $connection Connection ID.
+     * @param int $connection Connection ID.
      * @param int $code Close Code.
      * @return void 
      */
-    public abstract function close(string $connection, int $code): void;
+    public abstract function close(int $connection, int $code): void;
 
     /**
      * Is called when the Server starts.
@@ -85,10 +85,36 @@ abstract class Adapter
      */
     public abstract function onClose(callable $callback): self;
 
+    /**
+     * Sets maximum package length in bytes.
+     * @param int $bytes 
+     * @return Adapter 
+     */
     public abstract function setPackageMaxLength(int $bytes): self;
+
+    /**
+     * Enables/Disables compression.
+     * @param bool $enabled 
+     * @return Adapter 
+     */
     public abstract function setCompressionEnabled(bool $enabled): self;
+
+    /**
+     * Sets the number of workers.
+     * @param int $num 
+     * @return Adapter 
+     */
     public abstract function setWorkerNumber(int $num): self;
 
+    /**
+     * Returns the native server object from the Adapter.
+     * @return mixed 
+     */
     public abstract function getNative(): mixed;
+
+    /**
+     * Returns all connections.
+     * @return array 
+     */
     public abstract function getConnections(): array;
 }

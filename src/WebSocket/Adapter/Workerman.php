@@ -44,7 +44,7 @@ class Workerman extends Adapter
         }
     }
 
-    public function close($connection, int $code): void
+    public function close(int $connection, int $code): void
     {
         TcpConnection::$connections[$connection]->close();
     }
