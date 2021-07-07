@@ -27,11 +27,21 @@ $adapter = new WebSocket\Adapter\Swoole();
 $adapter->setPackageMaxLength(64000);
 
 $server = new WebSocket\Server($adapter);
-$server->onStart(/* callback */);
-$server->onWorkerStart(/* callback */);
-$server->onMessage(/* callback */);
-$server->onOpen(/* callback */);
-$server->onClose(/* callback */);
+$server->onStart(function () {
+    echo "Server started!";
+});
+$server->onWorkerStart(function (int $workerId) {
+    echo "Worker {$workerId} started!";
+});
+$server->onOpen(function (int $connection, $request) {
+    echo "Connection {$connection} established!";
+});
+$server->onMessage(function (int $connection, string $message) {
+    echo "Message from {$connection}: {$message}";
+});
+$server->onClose(function (int $connection) {
+    echo "Connection {$workerId} closed!";
+});
 
 $server->start();
 ```

@@ -57,11 +57,11 @@ class Server
 
     /**
      * Closes a connection.
-     * @param string $connection Connection ID.
+     * @param int $connection Connection ID.
      * @param int $code Close Code.
      * @return void 
      */
-    public function close($connection, int $code): void
+    public function close(int $connection, int $code): void
     {
         $this->adapter->close($connection, $code);
     }
@@ -119,5 +119,15 @@ class Server
     {
         $this->adapter->onClose($callback);
         return $this;
+    }
+
+    /**
+     * Returns all connections.
+     * @param callable $callback 
+     * @return array 
+     */
+    public function getConnections(): array
+    {
+        return $this->adapter->getConnections();
     }
 }

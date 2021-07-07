@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use Utopia\WebSocket;
-use Workerman\Connection\TcpConnection;
 
 $adapter = new WebSocket\Adapter\Workerman();
 $adapter->setWorkerNumber(1); // Important for tests
@@ -11,16 +10,19 @@ $adapter->setWorkerNumber(1); // Important for tests
 $server = new WebSocket\Server($adapter);
 
 $server
-    ->onOpen(function (TcpConnection $connection) {
-        echo "connected ", $connection->id, PHP_EOL;
+    ->onWorkerStart(function (int $workerId) {
+        echo "worker started ", $workerId, PHP_EOL;
     })
-    ->onClose(function (TcpConnection $connection) {
-        echo "disconnected ", $connection->id, PHP_EOL;
+    ->onOpen(function (int $connection, array $request) {
+        echo "connected ", $connection, PHP_EOL;
     })
-    ->onMessage(function (TcpConnection $connection, string $data) use ($server) {
-        echo $data, PHP_EOL;
+    ->onClose(function (int $connection) {
+        echo "disconnected ", $connection, PHP_EOL;
+    })
+    ->onMessage(function (int $connection, string $message) use ($server) {
+        echo $message, PHP_EOL;
 
-        switch ($data) {
+        switch ($message) {
             case 'ping':
                 $server->send([$connection], 'pong');
                 break;
@@ -28,7 +30,7 @@ $server
                 $server->send([$connection], 'ping');
                 break;
             case 'broadcast':
-                $server->send(TcpConnection::$connections, 'broadcast');
+                $server->send($server->getConnections(), 'broadcast');
                 break;
             case 'disconnect':
                 $server->send([$connection], 'disconnect');

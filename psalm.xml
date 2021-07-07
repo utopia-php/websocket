@@ -16,6 +16,8 @@
         <file name="vendor/swoole/ide-helper/output/swoole/constants.php"/>
         <file name="vendor/swoole/ide-helper/output/swoole/namespace/Server.php"/>
         <file name="vendor/swoole/ide-helper/output/swoole/namespace/Http/Server.php"/>
+        <file name="vendor/swoole/ide-helper/output/swoole/namespace/Http/Request.php"/>
+        <file name="vendor/swoole/ide-helper/output/swoole/namespace/WebSocket/Frame.php"/>
         <file name="vendor/swoole/ide-helper/output/swoole/namespace/WebSocket/Server.php"/>
     </stubs>
 </psalm>
