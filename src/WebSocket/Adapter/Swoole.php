@@ -26,6 +26,9 @@ class Swoole extends Adapter
         parent::__construct($host, $port);
 
         $this->server = new Server($this->host, $this->port);
+
+        // Set maximum connections to Swoole's limit of 1 Million
+        $this->config['max_connection'] = 1_000_000;
     }
 
     public function start(): void
