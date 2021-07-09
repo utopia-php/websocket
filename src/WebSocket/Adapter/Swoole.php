@@ -70,7 +70,7 @@ class Swoole extends Adapter
         $this->server->on('start', function () use ($callback) {
             call_user_func($callback);
 
-            Process::signal(2, function () {
+            Process::signal('2', function () {
                 $this->shutdown();
             });
         });
