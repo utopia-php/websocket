@@ -26,6 +26,9 @@ class Swoole extends Adapter
         parent::__construct($host, $port);
 
         $this->server = new Server($this->host, $this->port);
+
+        // Set maximum connections to Swoole's limit of 1 Million
+        $this->config['max_connection'] = 1_000_000;
     }
 
     public function start(): void
@@ -42,16 +45,18 @@ class Swoole extends Adapter
     public function send(array $connections, string $message): void
     {
         foreach ($connections as $connection) {
-            if ($this->server->exist($connection) && $this->server->isEstablished($connection)) {
-                $this->server->push(
-                    $connection,
-                    $message,
-                    SWOOLE_WEBSOCKET_OPCODE_TEXT,
-                    SWOOLE_WEBSOCKET_FLAG_FIN | SWOOLE_WEBSOCKET_FLAG_COMPRESS
-                );
-            } else {
-                $this->server->close($connection);
-            }
+            go(function () use ($connection, $message) {
+                if ($this->server->exist($connection) && $this->server->isEstablished($connection)) {
+                    $this->server->push(
+                        $connection,
+                        $message,
+                        SWOOLE_WEBSOCKET_OPCODE_TEXT,
+                        SWOOLE_WEBSOCKET_FLAG_FIN | SWOOLE_WEBSOCKET_FLAG_COMPRESS
+                    );
+                } else {
+                    $this->server->close($connection);
+                }
+            });
         }
     }
 
@@ -65,7 +70,7 @@ class Swoole extends Adapter
         $this->server->on('start', function () use ($callback) {
             call_user_func($callback);
 
-            Process::signal(2, function () {
+            Process::signal('2', function () {
                 $this->shutdown();
             });
         });
