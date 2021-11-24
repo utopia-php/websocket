@@ -1,6 +1,8 @@
 <?php
 namespace Utopia\WebSocket;
 
+use Exception;
+use Throwable;
 use Utopia\WebSocket\Adapter;
 
 /**
@@ -15,6 +17,14 @@ use Utopia\WebSocket\Adapter;
  */
 class Server
 {
+    /**
+     * Callbacks that will be executed when an error occurs
+     *
+     * @var array
+     */
+    protected $errorCallbacks = [];
+
+
     protected Adapter $adapter;
 
     /**
@@ -32,7 +42,13 @@ class Server
      */
     public function start(): void
     {
-        $this->adapter->start();
+        try {
+            $this->adapter->start();
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, "utopiaWebsocket.start");
+            }
+        }
     }
 
     /**
@@ -41,7 +57,13 @@ class Server
      */
     public function shutdown(): void
     {
-        $this->adapter->shutdown();
+        try {
+            $this->adapter->shutdown();
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, "utopiaWebsocket.shutdown");
+            }
+        }
     }
 
     /**
@@ -52,18 +74,30 @@ class Server
      */
     public function send(array $connections, string $message): void
     {
-        $this->adapter->send($connections, $message);
+        try {
+            $this->adapter->send($connections, $message);
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, "utopiaWebsocket.send");
+            }
+        }
     }
 
     /**
      * Closes a connection.
      * @param int $connection Connection ID.
      * @param int $code Close Code.
-     * @return void 
+     * @return void
      */
     public function close(int $connection, int $code): void
     {
-        $this->adapter->close($connection, $code);
+        try {
+            $this->adapter->close($connection, $code);
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, "utopiaWebsocket.close");
+            }
+        }
     }
 
     /**
@@ -73,7 +107,13 @@ class Server
      */
     public function onStart(callable $callback): self
     {
-        $this->adapter->onStart($callback);
+        try {
+            $this->adapter->onStart($callback);
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, "utopiaWebsocket.onStart");
+            }
+        }
         return $this;
     }
 
@@ -84,7 +124,14 @@ class Server
      */
     public function onWorkerStart(callable $callback): self
     {
-        $this->adapter->onWorkerStart($callback);
+        try {
+            $this->adapter->onWorkerStart($callback);
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, "utopiaWebsocket.onWorkerStart");
+            }
+        }
+
         return $this;
     }
 
@@ -95,7 +142,14 @@ class Server
      */
     public function onOpen(callable $callback): self
     {
-        $this->adapter->onOpen($callback);
+        try {
+            $this->adapter->onOpen($callback);
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, "utopiaWebsocket.onOpen");
+            }
+        }
+
         return $this;
     }
 
@@ -106,7 +160,14 @@ class Server
      */
     public function onMessage(callable $callback): self
     {
-        $this->adapter->onMessage($callback);
+        try {
+            $this->adapter->onMessage($callback);
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, "utopiaWebsocket.onMessage");
+            }
+        }
+
         return $this;
     }
 
@@ -117,17 +178,36 @@ class Server
      */
     public function onClose(callable $callback): self
     {
-        $this->adapter->onClose($callback);
+        try {
+            $this->adapter->onClose($callback);
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, "utopiaWebsocket.onClose");
+            }
+        }
+
         return $this;
     }
 
     /**
      * Returns all connections.
-     * @param callable $callback 
-     * @return array 
+     * @param callable $callback
+     * @return array
      */
     public function getConnections(): array
     {
         return $this->adapter->getConnections();
+    }
+
+    /**
+     * Register callback. Will be executed when error occurs.
+     * @param callable $callback
+     * @param Throwable $error
+     * @return self
+     */
+    public function onError(callable $callback): self
+    {
+        \array_push($this->errorCallbacks, $callback);
+        return $this;
     }
 }
