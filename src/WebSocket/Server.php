@@ -5,15 +5,7 @@ use Exception;
 use Throwable;
 use Utopia\WebSocket\Adapter;
 
-/**
- * Utopia PHP Framework
- *
- * @package Utopia\WebSocket
- *
- * @link https://github.com/utopia-php/framework
- * @version 1.0 RC1
- * @license The MIT License (MIT) <http://www.opensource.org/licenses/mit-license.php>
- */
+
 class Server
 {
     /**
