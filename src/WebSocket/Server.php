@@ -13,8 +13,8 @@ class Server
      *
      * @var array
      */
+    
     protected $errorCallbacks = [];
-
 
     protected Adapter $adapter;
 
@@ -36,6 +36,7 @@ class Server
         try {
             $this->adapter->start();
         } catch(Throwable $error) {
+        
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, "start");
             }
@@ -59,7 +60,7 @@ class Server
 
     /**
      * Sends a message to passed connections.
-     * @param array $connections Array of connection ID's.
+     * @param array<string> $connections Array of connection ID's.
      * @param string $message Message.
      * @return void 
      */
@@ -182,8 +183,7 @@ class Server
 
     /**
      * Returns all connections.
-     * @param callable $callback
-     * @return array
+     * @return array<mixed>
      */
     public function getConnections(): array
     {
@@ -193,7 +193,6 @@ class Server
     /**
      * Register callback. Will be executed when error occurs.
      * @param callable $callback
-     * @param Throwable $error
      * @return self
      */
     public function error(callable $callback): self
