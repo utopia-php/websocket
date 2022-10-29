@@ -8,13 +8,13 @@ use Utopia\WebSocket\Adapter;
 
 class Server
 {
+    
     /**
      * Callbacks that will be executed when an error occurs
-     *
-     * @var array
+     * 
+     * @var array<callable>
      */
     protected $errorCallbacks = [];
-
 
     protected Adapter $adapter;
 
