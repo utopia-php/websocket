@@ -7,9 +7,8 @@ abstract class Adapter
     protected string $host;
     protected int $port;
       /**
-     
-     * @var array<int|string,bool|int|string>
-     */
+      * @var array<int|string,bool|int|string>
+      */
     
     protected array $config = [];
 
@@ -32,7 +31,7 @@ abstract class Adapter
 
     /**
      * Sends a message to passed connections.
-     * @param array<string> $connections Array of connection ID's.
+     * @param array<mixed,mixed> $connections Array of connection ID's.
      * @param string $message Message.
      * @return void 
      */

@@ -25,11 +25,16 @@ class Workerman extends Adapter
 
         $this->server = new Worker("websocket://{$this->host}:{$this->port}");
     }
-
+    
     public function start(): void
     {
         Worker::runAll();
-        call_user_func($this->callbackOnStart);
+        //call_user_func($this->callbackOnStart);
+        $callable = ($this->callbackOnStart);
+		if (!is_callable($callable)) {
+			throw new \Exception();
+		}
+		\call_user_func($callable);
     }
 
     public function shutdown(): void
@@ -65,7 +70,7 @@ class Workerman extends Adapter
 
     public function onOpen(callable $callback): self
     {
-        $this->server->onConnect = function (mixed $connection) use ($callback): void {
+        $this->server->onConnect = function ($connection) use ($callback): void {
             $connection->onWebSocketConnect = function(TcpConnection $connection) use ($callback): void
             {
                 /** @var array<string> $_SERVER */
