@@ -1,4 +1,5 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
 use WebSocket\Client as WebSocketClient;
 

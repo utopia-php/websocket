@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__.'/../../../vendor/autoload.php';
 
 use Utopia\WebSocket;
 
@@ -11,13 +11,13 @@ $server = new WebSocket\Server($adapter);
 
 $server
     ->onWorkerStart(function (int $workerId) {
-        echo "worker started ", $workerId, PHP_EOL;
+        echo 'worker started ', $workerId, PHP_EOL;
     })
     ->onOpen(function (int $connection, array $request) {
-        echo "connected ", $connection, PHP_EOL;
+        echo 'connected ', $connection, PHP_EOL;
     })
     ->onClose(function (int $connection) {
-        echo "disconnected ", $connection, PHP_EOL;
+        echo 'disconnected ', $connection, PHP_EOL;
     })
     ->onMessage(function (int $connection, string $message) use ($server) {
         echo $message, PHP_EOL;

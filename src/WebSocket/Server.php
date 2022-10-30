@@ -1,10 +1,8 @@
 <?php
+
 namespace Utopia\WebSocket;
 
-use Exception;
 use Throwable;
-use Utopia\WebSocket\Adapter;
-
 
 class Server
 {
@@ -15,12 +13,12 @@ class Server
      */
     protected $errorCallbacks = [];
 
-
     protected Adapter $adapter;
 
     /**
      * Creates an instance of a WebSocker server.
-     * @param Adapter $adapter 
+     *
+     * @param  Adapter  $adapter
      */
     public function __construct(Adapter $adapter)
     {
@@ -29,7 +27,8 @@ class Server
 
     /**
      * Starts the WebSocket server.
-     * @return void 
+     *
+     * @return void
      */
     public function start(): void
     {
@@ -37,14 +36,15 @@ class Server
             $this->adapter->start();
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "start");
+                $errorCallback($error, 'start');
             }
         }
     }
 
     /**
      * Shuts down the WebSocket server.
-     * @return void 
+     *
+     * @return void
      */
     public function shutdown(): void
     {
@@ -52,16 +52,17 @@ class Server
             $this->adapter->shutdown();
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "shutdown");
+                $errorCallback($error, 'shutdown');
             }
         }
     }
 
     /**
      * Sends a message to passed connections.
-     * @param array $connections Array of connection ID's.
-     * @param string $message Message.
-     * @return void 
+     *
+     * @param  array  $connections Array of connection ID's.
+     * @param  string  $message Message.
+     * @return void
      */
     public function send(array $connections, string $message): void
     {
@@ -69,15 +70,16 @@ class Server
             $this->adapter->send($connections, $message);
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "send");
+                $errorCallback($error, 'send');
             }
         }
     }
 
     /**
      * Closes a connection.
-     * @param int $connection Connection ID.
-     * @param int $code Close Code.
+     *
+     * @param  int  $connection Connection ID.
+     * @param  int  $code Close Code.
      * @return void
      */
     public function close(int $connection, int $code): void
@@ -86,15 +88,16 @@ class Server
             $this->adapter->close($connection, $code);
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "close");
+                $errorCallback($error, 'close');
             }
         }
     }
 
     /**
      * Is called when the Server starts.
-     * @param callable $callback 
-     * @return self 
+     *
+     * @param  callable  $callback
+     * @return self
      */
     public function onStart(callable $callback): self
     {
@@ -102,16 +105,18 @@ class Server
             $this->adapter->onStart($callback);
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "onStart");
+                $errorCallback($error, 'onStart');
             }
         }
+
         return $this;
     }
 
     /**
      * Is called when a Worker starts.
-     * @param callable $callback 
-     * @return self 
+     *
+     * @param  callable  $callback
+     * @return self
      */
     public function onWorkerStart(callable $callback): self
     {
@@ -119,7 +124,7 @@ class Server
             $this->adapter->onWorkerStart($callback);
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "onWorkerStart");
+                $errorCallback($error, 'onWorkerStart');
             }
         }
 
@@ -128,8 +133,9 @@ class Server
 
     /**
      * Is called when a connection is established.
-     * @param callable $callback 
-     * @return self 
+     *
+     * @param  callable  $callback
+     * @return self
      */
     public function onOpen(callable $callback): self
     {
@@ -137,7 +143,7 @@ class Server
             $this->adapter->onOpen($callback);
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "onOpen");
+                $errorCallback($error, 'onOpen');
             }
         }
 
@@ -146,8 +152,9 @@ class Server
 
     /**
      * Is called when a message is received.
-     * @param callable $callback 
-     * @return self 
+     *
+     * @param  callable  $callback
+     * @return self
      */
     public function onMessage(callable $callback): self
     {
@@ -155,7 +162,7 @@ class Server
             $this->adapter->onMessage($callback);
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "onMessage");
+                $errorCallback($error, 'onMessage');
             }
         }
 
@@ -164,8 +171,9 @@ class Server
 
     /**
      * Is called when a connection is closed.
-     * @param callable $callback 
-     * @return self 
+     *
+     * @param  callable  $callback
+     * @return self
      */
     public function onClose(callable $callback): self
     {
@@ -173,7 +181,7 @@ class Server
             $this->adapter->onClose($callback);
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "onClose");
+                $errorCallback($error, 'onClose');
             }
         }
 
@@ -182,7 +190,8 @@ class Server
 
     /**
      * Returns all connections.
-     * @param callable $callback
+     *
+     * @param  callable  $callback
      * @return array
      */
     public function getConnections(): array
@@ -192,13 +201,15 @@ class Server
 
     /**
      * Register callback. Will be executed when error occurs.
-     * @param callable $callback
-     * @param Throwable $error
+     *
+     * @param  callable  $callback
+     * @param  Throwable  $error
      * @return self
      */
     public function error(callable $callback): self
     {
         \array_push($this->errorCallbacks, $callback);
+
         return $this;
     }
 }

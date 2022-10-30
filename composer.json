@@ -8,6 +8,10 @@
     "autoload": {
         "psr-4": {"Utopia\\WebSocket\\": "src/WebSocket"}
     },
+    "scripts": {
+        "lint": "./vendor/bin/pint --test",
+        "format": "./vendor/bin/pint"
+    },
     "require": {
         "php": ">=8.0"
     },
@@ -16,6 +20,7 @@
         "textalk/websocket": "1.5.2",
         "phpunit/phpunit": "^9.5.5",
         "vimeo/psalm": "^4.8.1",
-        "workerman/workerman": "^4.0"
+        "workerman/workerman": "^4.0",
+        "laravel/pint": "1.2.*"
     }
 }
