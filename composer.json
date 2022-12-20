@@ -4,6 +4,9 @@
     "type": "library",
     "keywords": ["php","framework", "upf", "utopia", "websocket"],
     "license": "MIT",
+    "scripts": {
+        "check": "./vendor/bin/phpstan analyse --level max src tests"
+    },
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {"Utopia\\WebSocket\\": "src/WebSocket"}
@@ -16,6 +19,7 @@
         "textalk/websocket": "1.5.2",
         "phpunit/phpunit": "^9.5.5",
         "vimeo/psalm": "^4.8.1",
-        "workerman/workerman": "^4.0"
+        "workerman/workerman": "^4.0",
+        "phpstan/phpstan": "^1.8"
     }
 }

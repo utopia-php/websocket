@@ -25,7 +25,7 @@ class SwooleTest extends TestCase
         $this->testServer(8002);
     }
 
-    private function testServer(int $port)
+    private function testServer(int $port) :void
     {
         $client = $this->getWebsocket('localhost', $port);
         $client->send('ping');

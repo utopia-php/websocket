@@ -6,6 +6,10 @@ abstract class Adapter
 {
     protected string $host;
     protected int $port;
+      /**
+      * @var array<int|string,bool|int|string>
+      */
+    
     protected array $config = [];
 
     function __construct(string $host = '0.0.0.0', int $port = 80) {
@@ -27,7 +31,7 @@ abstract class Adapter
 
     /**
      * Sends a message to passed connections.
-     * @param array $connections Array of connection ID's.
+     * @param array<mixed,mixed> $connections Array of connection ID's.
      * @param string $message Message.
      * @return void 
      */
@@ -105,7 +109,7 @@ abstract class Adapter
 
     /**
      * Returns all connections.
-     * @return array 
+     * @return array<mixed>
      */
     public abstract function getConnections(): array;
 }
