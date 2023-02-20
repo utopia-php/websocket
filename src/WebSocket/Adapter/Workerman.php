@@ -22,22 +22,22 @@ class Workerman extends Adapter
 
         $this->server = new Worker("websocket://{$this->host}:{$this->port}");
     }
-    
+
     public function start(): void
     {
         Worker::runAll();
         $callable = ($this->callbackOnStart);
-		if (!is_callable($callable)) {
-			throw new \Exception();
-		}
-		\call_user_func($callable);
+        if (! is_callable($callable)) {
+            throw new \Exception();
+        }
+        \call_user_func($callable);
     }
 
     public function shutdown(): void
     {
         Worker::stopAll();
     }
-    
+
     public function send(array $connections, string $message): void
     {
         foreach ($connections as $connection) {
@@ -69,8 +69,7 @@ class Workerman extends Adapter
     public function onOpen(callable $callback): self
     {
         $this->server->onConnect = function ($connection) use ($callback): void {
-            $connection->onWebSocketConnect = function(TcpConnection $connection) use ($callback): void
-            {
+            $connection->onWebSocketConnect = function (TcpConnection $connection) use ($callback): void {
                 /** @var array<string> $_SERVER */
                 call_user_func($callback, $connection->id, $_SERVER);
             };

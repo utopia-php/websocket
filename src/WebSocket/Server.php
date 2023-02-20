@@ -6,10 +6,9 @@ use Throwable;
 
 class Server
 {
-    
     /**
      * Callbacks that will be executed when an error occurs
-     * 
+     *
      * @var array<callable>
      */
     protected $errorCallbacks = [];
@@ -60,9 +59,10 @@ class Server
 
     /**
      * Sends a message to passed connections.
-     * @param array<mixed,mixed> $connections Array of connection ID's.
-     * @param string $message Message.
-     * @return void 
+     *
+     * @param  array<mixed,mixed>  $connections Array of connection ID's.
+     * @param  string  $message Message.
+     * @return void
      */
     public function send(array $connections, string $message): void
     {
@@ -190,6 +190,7 @@ class Server
 
     /**
      * Returns all connections.
+     *
      * @return array<mixed>
      */
     public function getConnections(): array
@@ -199,7 +200,8 @@ class Server
 
     /**
      * Register callback. Will be executed when error occurs.
-     * @param callable $callback
+     *
+     * @param  callable  $callback
      * @return self
      */
     public function error(callable $callback): self
