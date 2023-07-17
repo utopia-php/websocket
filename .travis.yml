@@ -1,4 +1,7 @@
 language: php
+
+dist: bionic
+
 php: 8.0
 
 notifications:
