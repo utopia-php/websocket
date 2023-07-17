@@ -6,15 +6,12 @@ use Utopia\WebSocket\Adapter;
 use Workerman\Connection\TcpConnection;
 use Workerman\Worker;
 
-/**
- * 
- * @package Utopia\WebSocket\Adapter
- */
 class Workerman extends Adapter
 {
     protected Worker $server;
 
     protected string $host;
+
     protected int $port;
 
     private mixed $callbackOnStart;
@@ -25,22 +22,22 @@ class Workerman extends Adapter
 
         $this->server = new Worker("websocket://{$this->host}:{$this->port}");
     }
-    
+
     public function start(): void
     {
         Worker::runAll();
         $callable = ($this->callbackOnStart);
-		if (!is_callable($callable)) {
-			throw new \Exception();
-		}
-		\call_user_func($callable);
+        if (! is_callable($callable)) {
+            throw new \Exception();
+        }
+        \call_user_func($callable);
     }
 
     public function shutdown(): void
     {
         Worker::stopAll();
     }
-    
+
     public function send(array $connections, string $message): void
     {
         foreach ($connections as $connection) {
@@ -56,26 +53,28 @@ class Workerman extends Adapter
     public function onStart(callable $callback): self
     {
         $this->callbackOnStart = $callback;
+
         return $this;
     }
 
     public function onWorkerStart(callable $callback): self
     {
-        $this->server->onWorkerStart = function(Worker $worker) use ($callback): void {
+        $this->server->onWorkerStart = function (Worker $worker) use ($callback): void {
             call_user_func($callback, $worker->id);
         };
+
         return $this;
     }
 
     public function onOpen(callable $callback): self
     {
         $this->server->onConnect = function ($connection) use ($callback): void {
-            $connection->onWebSocketConnect = function(TcpConnection $connection) use ($callback): void
-            {
+            $connection->onWebSocketConnect = function (TcpConnection $connection) use ($callback): void {
                 /** @var array<string> $_SERVER */
                 call_user_func($callback, $connection->id, $_SERVER);
             };
         };
+
         return $this;
     }
 
@@ -84,6 +83,7 @@ class Workerman extends Adapter
         $this->server->onMessage = function (TcpConnection $connection, string $data) use ($callback): void {
             call_user_func($callback, $connection->id, $data);
         };
+
         return $this;
     }
 
@@ -92,6 +92,7 @@ class Workerman extends Adapter
         $this->server->onClose = function (TcpConnection $connection) use ($callback): void {
             call_user_func($callback, $connection->id);
         };
+
         return $this;
     }
 
@@ -108,6 +109,7 @@ class Workerman extends Adapter
     public function setWorkerNumber(int $num): self
     {
         $this->server->count = $num;
+
         return $this;
     }
 

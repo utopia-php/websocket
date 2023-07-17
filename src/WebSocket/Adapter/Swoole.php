@@ -8,17 +8,15 @@ use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 use Utopia\WebSocket\Adapter;
 
-/**
- * 
- * @package Utopia\WebSocket\Adapter
- */
 class Swoole extends Adapter
 {
     protected Server $server;
 
     protected string $host;
+
     protected int $port;
-     /**
+
+    /**
      * @var array<int|string,bool|int|string>
      */
     private static array $connections = [];
@@ -76,14 +74,16 @@ class Swoole extends Adapter
                 $this->shutdown();
             });
         });
+
         return $this;
     }
 
     public function onWorkerStart(callable $callback): self
     {
-        $this->server->on('workerStart', function(Server $server, int $workerId) use ($callback) {
+        $this->server->on('workerStart', function (Server $server, int $workerId) use ($callback) {
             call_user_func($callback, $workerId);
         });
+
         return $this;
     }
 
@@ -94,6 +94,7 @@ class Swoole extends Adapter
 
             call_user_func($callback, $request->fd, $request);
         });
+
         return $this;
     }
 
@@ -102,6 +103,7 @@ class Swoole extends Adapter
         $this->server->on('message', function (Server $server, Frame $frame) use ($callback) {
             call_user_func($callback, $frame->fd, $frame->data);
         });
+
         return $this;
     }
 
@@ -112,28 +114,32 @@ class Swoole extends Adapter
 
             call_user_func($callback, $fd);
         });
+
         return $this;
     }
 
     public function setPackageMaxLength(int $bytes): self
     {
         $this->config['package_max_length'] = $bytes;
+
         return $this;
     }
 
     public function setCompressionEnabled(bool $enabled): self
     {
         $this->config['websocket_compression'] = $enabled;
+
         return $this;
     }
 
     public function setWorkerNumber(int $num): self
     {
         $this->config['worker_num'] = $num;
+
         return $this;
     }
 
-    public function getNative(): \Swoole\WebSocket\Server
+    public function getNative(): Server
     {
         return $this->server;
     }
