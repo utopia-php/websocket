@@ -33,7 +33,7 @@ jobs:
           context: .
           file: php-${{ matrix.php-versions }}.Dockerfile
           push: false
-          tags: websocket-dev
+          tags: websocket-${{ matrix.php-versions }}-dev
           load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max

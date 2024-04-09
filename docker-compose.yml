@@ -1,7 +1,7 @@
 services:
   tests:
     container_name: tests
-    image: websocket-dev
+    image: websocket-${PHP_VERSION:-8.3}-dev
     build:
       context: .
       dockerfile: php-${PHP_VERSION:-8.3}.Dockerfile
@@ -14,7 +14,7 @@ services:
 
   swoole:
     container_name: swoole
-    image: websocket-dev
+    image: websocket-${PHP_VERSION:-8.3}-dev
     command: php tests/servers/Swoole/server.php
     volumes:
       - ./src:/usr/src/code/src
@@ -27,7 +27,7 @@ services:
 
   workerman:
     container_name: workerman
-    image: websocket-dev
+    image: websocket-${PHP_VERSION:-8.3}-dev
     command: php tests/servers/Workerman/server.php start
     volumes:
       - ./src:/usr/src/code/src
