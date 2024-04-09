@@ -1,13 +1,15 @@
 <?php
 
+namespace Utopia\WebSocket\Tests;
+
 use PHPUnit\Framework\TestCase;
 use WebSocket\Client as WebSocketClient;
 
-class SwooleTest extends TestCase
+class AdapterTest extends TestCase
 {
-    private function getWebsocket(string $server, int $port): WebSocketClient
+    private function getWebsocket(string $host, int $port): WebSocketClient
     {
-        return new WebSocketClient('ws://'.$server.':'.$port, [
+        return new WebSocketClient('ws://' . $host . ':' . $port, [
             'timeout' => 10,
         ]);
     }
@@ -18,23 +20,23 @@ class SwooleTest extends TestCase
 
     public function testSwoole(): void
     {
-        $this->testServer(8001);
+        $this->testServer('swoole', 80);
     }
 
     public function testWorkerman(): void
     {
-        $this->testServer(8002);
+        $this->testServer('workerman', 80);
     }
 
-    private function testServer(int $port): void
+    private function testServer(string $host, int $port): void
     {
-        $client = $this->getWebsocket('localhost', $port);
+        $client = $this->getWebsocket($host, $port);
         $client->send('ping');
         $this->assertEquals('pong', $client->receive());
         $this->assertEquals(true, $client->isConnected());
 
-        $clientA = $this->getWebsocket('localhost', $port);
-        $clientB = $this->getWebsocket('localhost', $port);
+        $clientA = $this->getWebsocket($host, $port);
+        $clientB = $this->getWebsocket($host, $port);
 
         $clientA->send('ping');
         $this->assertEquals('pong', $clientA->receive());
@@ -56,7 +58,7 @@ class SwooleTest extends TestCase
 
         $client->send('disconnect');
         $this->assertEquals('disconnect', $client->receive());
-        $this->expectException(Throwable::class);
+        $this->expectException(\Throwable::class);
         $client->receive();
     }
 }

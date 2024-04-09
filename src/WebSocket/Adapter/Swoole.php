@@ -15,10 +15,9 @@ class Swoole extends Adapter
     protected string $host;
 
     protected int $port;
-
     /**
-     * @var array<int|string,bool|int|string>
-     */
+    * @var array<int|string,bool|int|string>
+    */
     private static array $connections = [];
 
     public function __construct(string $host = '0.0.0.0', int $port = 80)
@@ -81,6 +80,14 @@ class Swoole extends Adapter
     public function onWorkerStart(callable $callback): self
     {
         $this->server->on('workerStart', function (Server $server, int $workerId) use ($callback) {
+            call_user_func($callback, $workerId);
+        });
+        return $this;
+    }
+
+    public function onWorkerStop(callable $callback): Adapter
+    {
+        $this->server->on('workerStop', function (Server $server, int $workerId) use ($callback) {
             call_user_func($callback, $workerId);
         });
 

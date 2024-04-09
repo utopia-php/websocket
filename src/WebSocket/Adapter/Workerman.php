@@ -27,7 +27,7 @@ class Workerman extends Adapter
     {
         Worker::runAll();
         $callable = ($this->callbackOnStart);
-        if (! is_callable($callable)) {
+        if (!is_callable($callable)) {
             throw new \Exception();
         }
         \call_user_func($callable);
@@ -60,6 +60,14 @@ class Workerman extends Adapter
     public function onWorkerStart(callable $callback): self
     {
         $this->server->onWorkerStart = function (Worker $worker) use ($callback): void {
+            call_user_func($callback, $worker->id);
+        };
+        return $this;
+    }
+
+    public function onWorkerStop(callable $callback): Adapter
+    {
+        $this->server->onWorkerStop = function (Worker $worker) use ($callback): void {
             call_user_func($callback, $worker->id);
         };
 
