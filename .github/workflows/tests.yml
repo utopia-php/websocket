@@ -41,7 +41,6 @@ jobs:
       - name: Build & Start Containers
         run:  |
           export PHP_VERSION=${{ matrix.php-versions }} 
-          docker compose build
           docker compose up -d
           sleep 10
 
