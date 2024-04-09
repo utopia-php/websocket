@@ -27,7 +27,7 @@ class Workerman extends Adapter
     {
         Worker::runAll();
         $callable = ($this->callbackOnStart);
-        if (! is_callable($callable)) {
+        if (!is_callable($callable)) {
             throw new \Exception();
         }
         \call_user_func($callable);

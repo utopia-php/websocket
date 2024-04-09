@@ -15,10 +15,9 @@ class Swoole extends Adapter
     protected string $host;
 
     protected int $port;
-
     /**
-     * @var array<int|string,bool|int|string>
-     */
+    * @var array<int|string,bool|int|string>
+    */
     private static array $connections = [];
 
     public function __construct(string $host = '0.0.0.0', int $port = 80)

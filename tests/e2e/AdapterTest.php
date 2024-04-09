@@ -1,13 +1,15 @@
 <?php
 
+namespace Utopia\WebSocket\Tests;
+
 use PHPUnit\Framework\TestCase;
 use WebSocket\Client as WebSocketClient;
 
-class SwooleTest extends TestCase
+class AdapterTest extends TestCase
 {
-    private function getWebsocket(string $server, int $port): WebSocketClient
+    private function getWebsocket(string $host, int $port): WebSocketClient
     {
-        return new WebSocketClient('ws://'.$server.':'.$port, [
+        return new WebSocketClient('ws://' . $host . ':' . $port, [
             'timeout' => 10,
         ]);
     }
@@ -56,7 +58,7 @@ class SwooleTest extends TestCase
 
         $client->send('disconnect');
         $this->assertEquals('disconnect', $client->receive());
-        $this->expectException(Throwable::class);
+        $this->expectException(\Throwable::class);
         $client->receive();
     }
 }

@@ -8,17 +8,15 @@ class Server
 {
     /**
      * Callbacks that will be executed when an error occurs
-     *
      * @var array<callable>
      */
-    protected $errorCallbacks = [];
+    protected array $errorCallbacks = [];
 
     protected Adapter $adapter;
 
     /**
-     * Creates an instance of a WebSocker server.
-     *
-     * @param  Adapter  $adapter
+     * Creates an instance of a WebSocket server.
+     * @param Adapter $adapter
      */
     public function __construct(Adapter $adapter)
     {
@@ -27,7 +25,6 @@ class Server
 
     /**
      * Starts the WebSocket server.
-     *
      * @return void
      */
     public function start(): void
@@ -43,7 +40,6 @@ class Server
 
     /**
      * Shuts down the WebSocket server.
-     *
      * @return void
      */
     public function shutdown(): void
@@ -59,9 +55,8 @@ class Server
 
     /**
      * Sends a message to passed connections.
-     *
-     * @param  array<mixed,mixed>  $connections Array of connection ID's.
-     * @param  string  $message Message.
+     * @param array<mixed, mixed> $connections Array of connection ID's.
+     * @param string $message Message.
      * @return void
      */
     public function send(array $connections, string $message): void
@@ -95,8 +90,7 @@ class Server
 
     /**
      * Is called when the Server starts.
-     *
-     * @param  callable  $callback
+     * @param callable $callback
      * @return self
      */
     public function onStart(callable $callback): self
@@ -114,8 +108,7 @@ class Server
 
     /**
      * Is called when a Worker starts.
-     *
-     * @param  callable  $callback
+     * @param callable $callback
      * @return self
      */
     public function onWorkerStart(callable $callback): self
@@ -151,8 +144,7 @@ class Server
 
     /**
      * Is called when a connection is established.
-     *
-     * @param  callable  $callback
+     * @param callable $callback
      * @return self
      */
     public function onOpen(callable $callback): self
@@ -170,8 +162,7 @@ class Server
 
     /**
      * Is called when a message is received.
-     *
-     * @param  callable  $callback
+     * @param callable $callback
      * @return self
      */
     public function onMessage(callable $callback): self
@@ -189,8 +180,7 @@ class Server
 
     /**
      * Is called when a connection is closed.
-     *
-     * @param  callable  $callback
+     * @param callable $callback
      * @return self
      */
     public function onClose(callable $callback): self
@@ -224,8 +214,7 @@ class Server
      */
     public function error(callable $callback): self
     {
-        \array_push($this->errorCallbacks, $callback);
-
+        $this->errorCallbacks[] = $callback;
         return $this;
     }
 }
