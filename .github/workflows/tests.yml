@@ -6,6 +6,7 @@ jobs:
     name: Unit & E2E
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         php-versions: [
           '8.0',
@@ -37,8 +38,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Start Servers
-        run:  docker compose up -d && sleep 10
+      - name: Build & Start Containers
+        run:  |
+          export PHP_VERSION=${{ matrix.php-versions }} 
+          docker compose build
+          docker compose up -d
+          sleep 10
 
       - name: Run Tests
-        run: PHP_VERSION=${{ matrix.php-versions }} docker compose exec tests vendor/bin/phpunit
+        run: docker compose exec tests vendor/bin/phpunit
