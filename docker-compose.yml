@@ -1,40 +1,39 @@
 services:
   tests:
     container_name: tests
-    networks:
-        - websockets
+    image_name: websockets-dev
     build:
       context: .
     volumes:
       - ./src:/usr/src/code/src
       - ./tests:/usr/src/code/tests
       - ./phpunit.xml:/usr/src/code/phpunit.xml
+    networks:
+        - websockets
 
   swoole:
     container_name: swoole
-    networks:
-      - websockets
-    build:
-      context: .
+    image_name: websockets-dev
     command: php tests/servers/Swoole/server.php
     volumes:
       - ./src:/usr/src/code/src
       - ./tests:/usr/src/code/tests
       - ./phpunit.xml:/usr/src/code/phpunit.xml
+    networks:
+      - websockets
     ports:
       - "8001:80"
 
   workerman:
     container_name: workerman
-    networks:
-      - websockets
-    build:
-      context: .
+    image_name: websockets-dev
     command: php tests/servers/Workerman/server.php start
     volumes:
       - ./src:/usr/src/code/src
       - ./tests:/usr/src/code/tests
       - ./phpunit.xml:/usr/src/code/phpunit.xml
+    networks:
+      - websockets
     ports:
       - "8002:80"
 
