@@ -5,6 +5,14 @@ jobs:
   tests:
     name: Unit & E2E
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: [
+          '8.0',
+          '8.1',
+          '8.2',
+          '8.3'
+        ]
 
     steps:
       - name: Checkout repository
@@ -22,8 +30,9 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          file: php-${{ matrix.php-versions }}.Dockerfile
           push: false
-          tags: websockets-dev
+          tags: websocket-dev
           load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -32,4 +41,4 @@ jobs:
         run:  docker compose up -d && sleep 10
 
       - name: Run Tests
-        run: docker compose exec tests vendor/bin/phpunit
+        run: PHP_VERSION=${{ matrix.php-versions }} docker compose exec tests vendor/bin/phpunit
