@@ -68,6 +68,13 @@ abstract class Adapter
     abstract public function onWorkerStart(callable $callback): self;
 
     /**
+     * Is called when a Worker stops.
+     * @param callable $callback
+     * @return self
+     */
+    abstract public function onWorkerStop(callable $callback): self;
+
+    /**
      * Is called when a connection is established.
      *
      * @param  callable  $callback

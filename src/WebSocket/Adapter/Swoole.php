@@ -83,6 +83,14 @@ class Swoole extends Adapter
         $this->server->on('workerStart', function (Server $server, int $workerId) use ($callback) {
             call_user_func($callback, $workerId);
         });
+        return $this;
+    }
+
+    public function onWorkerStop(callable $callback): Adapter
+    {
+        $this->server->on('workerStop', function (Server $server, int $workerId) use ($callback) {
+            call_user_func($callback, $workerId);
+        });
 
         return $this;
     }

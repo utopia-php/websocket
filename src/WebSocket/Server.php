@@ -132,6 +132,24 @@ class Server
     }
 
     /**
+     * Is called when a Worker stops.
+     * @param callable $callback
+     * @return self
+     */
+    public function onWorkerStop(callable $callback): self
+    {
+        try {
+            $this->adapter->onWorkerStop($callback);
+        } catch(Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, 'onWorkerStop');
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Is called when a connection is established.
      *
      * @param  callable  $callback

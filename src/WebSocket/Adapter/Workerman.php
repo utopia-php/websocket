@@ -62,6 +62,14 @@ class Workerman extends Adapter
         $this->server->onWorkerStart = function (Worker $worker) use ($callback): void {
             call_user_func($callback, $worker->id);
         };
+        return $this;
+    }
+
+    public function onWorkerStop(callable $callback): Adapter
+    {
+        $this->server->onWorkerStop = function (Worker $worker) use ($callback): void {
+            call_user_func($callback, $worker->id);
+        };
 
         return $this;
     }
