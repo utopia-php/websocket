@@ -40,3 +40,4 @@ services:
 
 networks:
     websockets:
+      driver: bridge
