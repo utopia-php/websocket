@@ -1,7 +1,7 @@
 services:
   tests:
     container_name: tests
-    image_name: websockets-dev
+    image: websockets-dev
     build:
       context: .
     volumes:
@@ -13,7 +13,7 @@ services:
 
   swoole:
     container_name: swoole
-    image_name: websockets-dev
+    image: websockets-dev
     command: php tests/servers/Swoole/server.php
     volumes:
       - ./src:/usr/src/code/src
@@ -26,7 +26,7 @@ services:
 
   workerman:
     container_name: workerman
-    image_name: websockets-dev
+    image: websockets-dev
     command: php tests/servers/Workerman/server.php start
     volumes:
       - ./src:/usr/src/code/src
