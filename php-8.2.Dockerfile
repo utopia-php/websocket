@@ -57,7 +57,7 @@ RUN apk update && apk add --no-cache \
 RUN docker-php-ext-install sockets pcntl
 
 COPY --from=composer /usr/local/src/vendor /usr/src/code/vendor
-COPY --from=swoole /usr/local/lib/php/extensions/no-debug-non-zts-20230831/swoole.so /usr/local/lib/php/extensions/no-debug-non-zts-20230831/
+COPY --from=swoole /usr/local/lib/php/extensions/no-debug-non-zts-20220829/swoole.so /usr/local/lib/php/extensions/no-debug-non-zts-20220829/
 
 RUN echo extension=swoole.so >> /usr/local/etc/php/conf.d/swoole.ini
 
