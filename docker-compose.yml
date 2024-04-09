@@ -1,19 +1,42 @@
-version: '3.1'
-
 services:
+  tests:
+    container_name: tests
+    networks:
+        - websockets
+    build:
+      context: .
+    volumes:
+      - ./src:/usr/src/code/src
+      - ./tests:/usr/src/code/tests
+      - ./phpunit.xml:/usr/src/code/phpunit.xml
+
   swoole:
     container_name: swoole
-    build: ./tests/servers/Swoole/.
-    command: php /usr/src/code/tests/servers/Swoole/server.php
+    networks:
+      - websockets
+    build:
+      context: .
+    command: php tests/servers/Swoole/server.php
     volumes:
-      - ./:/usr/src/code
+      - ./src:/usr/src/code/src
+      - ./tests:/usr/src/code/tests
+      - ./phpunit.xml:/usr/src/code/phpunit.xml
     ports:
       - "8001:80"
+
   workerman:
     container_name: workerman
-    build: ./tests/servers/Workerman/.
-    command: php /usr/src/code/tests/servers/Workerman/server.php start
+    networks:
+      - websockets
+    build:
+      context: .
+    command: php tests/servers/Workerman/server.php start
     volumes:
-      - ./:/usr/src/code
+      - ./src:/usr/src/code/src
+      - ./tests:/usr/src/code/tests
+      - ./phpunit.xml:/usr/src/code/phpunit.xml
     ports:
       - "8002:80"
+
+networks:
+    websockets:

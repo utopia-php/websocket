@@ -30,13 +30,13 @@ class AdapterTest extends TestCase
 
     private function testServer(int $port): void
     {
-        $client = $this->getWebsocket('localhost', $port);
+        $client = $this->getWebsocket('host.docker.internal', $port);
         $client->send('ping');
         $this->assertEquals('pong', $client->receive());
         $this->assertEquals(true, $client->isConnected());
 
-        $clientA = $this->getWebsocket('localhost', $port);
-        $clientB = $this->getWebsocket('localhost', $port);
+        $clientA = $this->getWebsocket('host.docker.internal', $port);
+        $clientB = $this->getWebsocket('host.docker.internal', $port);
 
         $clientA->send('ping');
         $this->assertEquals('pong', $clientA->receive());
