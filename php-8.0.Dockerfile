@@ -15,7 +15,7 @@ RUN composer install \
     --no-scripts \
     --prefer-dist
 
-FROM php:8.0-cli-alpine3.19 as compile
+FROM php:8.0-cli-alpine3.16 as compile
 
 RUN \
   apk add --no-cache --virtual .deps \
@@ -42,7 +42,7 @@ RUN \
   make && make install && \
   cd ..
 
-FROM php:8.0-cli-alpine3.19 as final
+FROM php:8.0-cli-alpine3.16 as final
 
 RUN apk update && apk add --no-cache \
   linux-headers \
