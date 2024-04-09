@@ -38,7 +38,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build & Start Containers
+      - name: Start Containers
         run:  |
           export PHP_VERSION=${{ matrix.php-versions }} 
           docker compose up -d
