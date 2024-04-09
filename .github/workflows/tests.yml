@@ -36,8 +36,8 @@ jobs:
           tags: websocket-${{ matrix.php-versions }}-dev
           load: true
           outputs: type=cacheonly
-          cache-from: type=gha,scope=${{ maxtrix.php-versions }}
-          cache-to: type=gha,mode=max,scope=${{ maxtrix.php-versions }}
+          cache-from: type=gha,scope=${{ matrix.php-versions }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.php-versions }}
 
       - name: Start Containers
         run:  |
