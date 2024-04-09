@@ -21,10 +21,9 @@
         "php": ">=8.0"
     },
     "require-dev": {
-        "swoole/ide-helper": "4.6.6",
+        "swoole/ide-helper": "5.1.2",
         "textalk/websocket": "1.5.2",
         "phpunit/phpunit": "^9.5.5",
-        "vimeo/psalm": "^4.8.1",
         "workerman/workerman": "^4.0",
         "phpstan/phpstan": "^1.8",
         "laravel/pint": "^1.15"
