@@ -6,6 +6,7 @@
     "license": "MIT",
     "scripts": {
         "test": "./vendor/bin/phpunit",
+        "lint": "./vendor/bin/pint --test --preset=psr12 src tests",
         "format": "./vendor/bin/pint --preset=psr12 src tests",
         "check": "./vendor/bin/phpstan analyse --level max src tests"
     },
