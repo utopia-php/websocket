@@ -15,51 +15,11 @@ RUN composer install \
     --no-scripts \
     --prefer-dist
 
-FROM php:8.0-cli-alpine3.16 as compile
-
-RUN \
-  apk add --no-cache --virtual .deps \
-  linux-headers \
-  make \
-  automake \
-  autoconf \
-  gcc \
-  g++ \
-  git \
-  openssl-dev \
-  curl-dev
-
-RUN docker-php-ext-install sockets
-
-ENV PHP_SWOOLE_VERSION="v5.1.2"
-
-FROM compile AS swoole
-RUN \
-  git clone --depth 1 --branch $PHP_SWOOLE_VERSION https://github.com/swoole/swoole-src.git && \
-  cd swoole-src && \
-  phpize && \
-  ./configure --enable-sockets --enable-http2 --enable-openssl --enable-swoole-curl && \
-  make && make install && \
-  cd ..
-
-FROM php:8.0-cli-alpine3.16 as final
-
-RUN apk update && apk add --no-cache \
-  linux-headers \
-  make \
-  automake \
-  autoconf \
-  gcc \
-  g++ \
-  curl-dev \
-  libstdc++
+FROM appwrite/utopia-base:php-8.0-0.1.0 as final
 
 RUN docker-php-ext-install sockets pcntl
 
 COPY --from=composer /usr/local/src/vendor /usr/src/code/vendor
-COPY --from=swoole /usr/local/lib/php/extensions/no-debug-non-zts-20200930/swoole.so /usr/local/lib/php/extensions/no-debug-non-zts-20200930/
-
-RUN echo extension=swoole.so >> /usr/local/etc/php/conf.d/swoole.ini
 
 COPY ./src /usr/src/code/src
 COPY ./tests /usr/src/code/tests
