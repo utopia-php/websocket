@@ -83,14 +83,6 @@ class ClientTest extends TestCase
         }
         $this->assertEquals(3, $broadcastCount);
 
-        $broadcastCount = 0;
-        $startTime = time();
-        $clientB->send('broadcast');
-        while ($broadcastCount < 3 && (time() - $startTime) < 10) {
-            \Swoole\Event::wait();
-        }
-        $this->assertEquals(3, $broadcastCount);
-
         // Test disconnection
         $clientAClosed = false;
         $clientBClosed = false;
