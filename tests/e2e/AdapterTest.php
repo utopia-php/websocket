@@ -5,7 +5,7 @@ namespace Utopia\WebSocket\Tests;
 use PHPUnit\Framework\TestCase;
 use Utopia\WebSocket\Client;
 
-use function Co\run;
+use function Swoole\Coroutine\run;
 
 class AdapterTest extends TestCase
 {
@@ -16,7 +16,9 @@ class AdapterTest extends TestCase
         ]);
     }
 
-    public function setUp(): void {}
+    public function setUp(): void
+    {
+    }
 
     public function testSwoole(): void
     {
