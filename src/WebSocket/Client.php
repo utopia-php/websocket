@@ -211,7 +211,7 @@ class Client
      */
     private function emit(string $event, mixed $data = null): void
     {
-        $handler = match($event) {
+        $handler = match ($event) {
             'message' => $this->onMessage,
             'close' => $this->onClose,
             'error' => $this->onError,

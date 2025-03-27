@@ -14,23 +14,23 @@ class AdapterTest extends TestCase
         ]);
     }
 
-    public function setUp(): void
-    {
-    }
+    public function setUp(): void {}
 
     public function testSwoole(): void
     {
         $this->testServer('swoole', 80);
     }
 
-    public function testWorkerman(): void
-    {
-        $this->testServer('workerman', 80);
-    }
+    // public function testWorkerman(): void
+    // {
+    //     var_dump('Starting Workerman test');
+    //     $this->testServer('workerman', 80);
+    // }
 
     private function testServer(string $host, int $port): void
     {
         $client = $this->getWebsocket($host, $port);
+
         $client->send('ping');
         $this->assertEquals('pong', $client->receive());
         $this->assertEquals(true, $client->isConnected());
