@@ -1,4 +1,4 @@
-FROM composer:2.0 as composer
+FROM composer:2.0 AS composer
 
 ARG TESTING=false
 ENV TESTING=$TESTING
@@ -15,7 +15,7 @@ RUN composer install \
     --no-scripts \
     --prefer-dist
 
-FROM appwrite/utopia-base:php-8.2-0.1.0 as final
+FROM appwrite/utopia-base:php-8.2-0.1.0 AS final
 
 RUN docker-php-ext-install sockets pcntl
 
