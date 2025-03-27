@@ -12,6 +12,7 @@ class Client
     private string $host;
     private int $port;
     private string $path;
+    /** @var array<string, string> */
     private array $headers;
     private float $timeout;
 
@@ -23,6 +24,10 @@ class Client
     private ?\Closure $onPing = null;
     private ?\Closure $onPong = null;
 
+    /**
+     * @param string $url
+     * @param array{headers?: array<string, string>, timeout?: float} $options
+     */
     public function __construct(string $url, array $options = [])
     {
         $parsedUrl = parse_url($url);
@@ -30,8 +35,12 @@ class Client
             throw new \InvalidArgumentException('Invalid WebSocket URL');
         }
 
+        if (!isset($parsedUrl['host'])) {
+            throw new \InvalidArgumentException('WebSocket URL must contain a host');
+        }
+
         $this->host = $parsedUrl['host'];
-        $this->port = $parsedUrl['port'] ?? ($parsedUrl['scheme'] === 'wss' ? 443 : 80);
+        $this->port = $parsedUrl['port'] ?? (isset($parsedUrl['scheme']) && $parsedUrl['scheme'] === 'wss' ? 443 : 80);
         $this->path = $parsedUrl['path'] ?? '/';
         if (isset($parsedUrl['query'])) {
             $this->path .= '?' . $parsedUrl['query'];
@@ -196,7 +205,11 @@ class Client
         return $this;
     }
 
-    private function emit(string $event, $data = null): void
+    /**
+     * @param string $event
+     * @param mixed $data
+     */
+    private function emit(string $event, mixed $data = null): void
     {
         $handler = match($event) {
             'message' => $this->onMessage,
