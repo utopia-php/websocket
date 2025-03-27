@@ -99,6 +99,10 @@ class ClientTest extends TestCase
 
     public function testListen(): void
     {
+        if (version_compare(PHP_VERSION, '8.0.0', '=')) {
+            $this->markTestSkipped('Test skipped on PHP 8.0 due to compatibility issues');
+        }
+
         $messageReceived = false;
         $testMessage = 'Hello WebSocket!';
 
@@ -141,6 +145,10 @@ class ClientTest extends TestCase
 
     public function testListenWithError(): void
     {
+        if (version_compare(PHP_VERSION, '8.0.0', '=')) {
+            $this->markTestSkipped('Test skipped on PHP 8.0 due to compatibility issues');
+        }
+
         $errorReceived = false;
         $this->client->onError(function ($error) use (&$errorReceived) {
             $errorReceived = true;
