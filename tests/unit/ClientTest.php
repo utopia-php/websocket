@@ -70,12 +70,12 @@ class ClientTest extends TestCase
         });
 
         // Verify that all handlers are properly set
-        $this->assertIsCallable($this->client->onMessage(...));
-        $this->assertIsCallable($this->client->onClose(...));
-        $this->assertIsCallable($this->client->onError(...));
-        $this->assertIsCallable($this->client->onOpen(...));
-        $this->assertIsCallable($this->client->onPing(...));
-        $this->assertIsCallable($this->client->onPong(...));
+        $this->assertIsCallable([$this->client, 'onMessage']);
+        $this->assertIsCallable([$this->client, 'onClose']);
+        $this->assertIsCallable([$this->client, 'onError']);
+        $this->assertIsCallable([$this->client, 'onOpen']);
+        $this->assertIsCallable([$this->client, 'onPing']);
+        $this->assertIsCallable([$this->client, 'onPong']);
     }
 
     public function testIsConnected(): void
