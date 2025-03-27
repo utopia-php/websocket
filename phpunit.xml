@@ -6,7 +6,7 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="true"
-         stopOnFailure="false"
+         stopOnFailure="true"
         >
     <testsuites>
         <!-- <testsuite name="Unit">

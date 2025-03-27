@@ -75,42 +75,37 @@ class Client
 
         $this->connected = true;
         $this->emit('open');
-
-        // Start listening for messages
-        $this->startMessageLoop();
     }
 
-    private function startMessageLoop(): void
+    public function listen(): void
     {
-        go(function () {
-            while ($this->connected) {
-                try {
-                    $frame = $this->client->recv($this->timeout);
+        while ($this->connected) {
+            try {
+                $frame = $this->client->recv($this->timeout);
 
-                    if ($frame === false) {
-                        if ($this->client->errCode === SWOOLE_ERROR_CLIENT_NO_CONNECTION) {
-                            $this->handleClose();
-                            break;
-                        }
-                        throw new \RuntimeException(
-                            "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
-                        );
+                if ($frame === false) {
+                    if ($this->client->errCode === SWOOLE_ERROR_CLIENT_NO_CONNECTION) {
+                        $this->handleClose();
+                        break;
                     }
-
-                    if ($frame === "") {
-                        continue;
-                    }
-
-                    if ($frame instanceof Frame) {
-                        $this->handleFrame($frame);
-                    }
-                } catch (\Throwable $e) {
-                    $this->emit('error', $e);
-                    $this->handleClose();
-                    break;
+                    throw new \RuntimeException(
+                        "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
+                    );
                 }
+
+                if ($frame === "") {
+                    continue;
+                }
+
+                if ($frame instanceof Frame) {
+                    $this->handleFrame($frame);
+                }
+            } catch (\Throwable $e) {
+                $this->emit('error', $e);
+                $this->handleClose();
+                break;
             }
-        });
+        }
     }
 
     private function handleFrame(Frame $frame): void
