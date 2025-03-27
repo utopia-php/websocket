@@ -46,4 +46,4 @@ jobs:
           sleep 10
 
       - name: Run Tests
-        run: docker compose exec tests vendor/bin/phpunit
+        run: docker compose exec tests vendor/bin/phpunit --debug

@@ -3,13 +3,13 @@
 namespace Utopia\WebSocket\Tests;
 
 use PHPUnit\Framework\TestCase;
-use WebSocket\Client as WebSocketClient;
+use Utopia\WebSocket\Client;
 
 class AdapterTest extends TestCase
 {
-    private function getWebsocket(string $host, int $port): WebSocketClient
+    private function getWebsocket(string $host, int $port): Client
     {
-        return new WebSocketClient('ws://' . $host . ':' . $port, [
+        return new Client('ws://' . $host . ':' . $port, [
             'timeout' => 10,
         ]);
     }

@@ -225,4 +225,46 @@ class Client
             $handler($data);
         }
     }
+
+    public function receive(): ?string
+    {
+        if (!$this->connected) {
+            throw new \RuntimeException('Not connected to WebSocket server');
+        }
+
+        $frame = $this->client->recv($this->timeout);
+
+        if ($frame === false) {
+            if ($this->client->errCode === SWOOLE_ERROR_CLIENT_NO_CONNECTION) {
+                $this->handleClose();
+                return null;
+            }
+            throw new \RuntimeException(
+                "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
+            );
+        }
+
+        if ($frame === "") {
+            return null;
+        }
+
+        if ($frame instanceof Frame) {
+            switch ($frame->opcode) {
+                case WEBSOCKET_OPCODE_TEXT:
+                    return $frame->data;
+                case WEBSOCKET_OPCODE_CLOSE:
+                    $this->handleClose();
+                    return null;
+                case WEBSOCKET_OPCODE_PING:
+                    $this->emit('ping', $frame->data);
+                    $this->client->push('', WEBSOCKET_OPCODE_PONG);
+                    return null;
+                case WEBSOCKET_OPCODE_PONG:
+                    $this->emit('pong', $frame->data);
+                    return null;
+            }
+        }
+
+        return null;
+    }
 }

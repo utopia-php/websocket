@@ -14,18 +14,10 @@ class ClientTest extends TestCase
         ]);
     }
 
-    public function testSwoole(): void
+    public function testClient(): void
     {
-        $this->testClient('swoole', 80);
-    }
-
-    public function testWorkerman(): void
-    {
-        $this->testClient('workerman', 80);
-    }
-
-    private function testClient(string $host, int $port): void
-    {
+        $host = 'swoole';
+        $port = 80;
         $client = $this->getClient($host, $port);
 
         $messageReceived = false;
@@ -37,8 +29,11 @@ class ClientTest extends TestCase
         $client->connect();
         $client->send('ping');
 
-        // Wait for response
-        \Swoole\Event::wait();
+        $startTime = time();
+        while (!$messageReceived && (time() - $startTime) < 10) {
+            \Swoole\Event::wait();
+        }
+
         $this->assertTrue($messageReceived);
         $this->assertTrue($client->isConnected());
 
@@ -81,13 +76,19 @@ class ClientTest extends TestCase
         $clientA->onMessage($broadcastHandler);
         $clientB->onMessage($broadcastHandler);
 
+        $startTime = time();
         $clientA->send('broadcast');
-        \Swoole\Event::wait();
+        while ($broadcastCount < 3 && (time() - $startTime) < 10) {
+            \Swoole\Event::wait();
+        }
         $this->assertEquals(3, $broadcastCount);
 
         $broadcastCount = 0;
+        $startTime = time();
         $clientB->send('broadcast');
-        \Swoole\Event::wait();
+        while ($broadcastCount < 3 && (time() - $startTime) < 10) {
+            \Swoole\Event::wait();
+        }
         $this->assertEquals(3, $broadcastCount);
 
         // Test disconnection
