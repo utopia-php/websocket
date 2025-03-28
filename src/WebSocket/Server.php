@@ -31,7 +31,7 @@ class Server
     {
         try {
             $this->adapter->start();
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'start');
             }
@@ -46,7 +46,7 @@ class Server
     {
         try {
             $this->adapter->shutdown();
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'shutdown');
             }
@@ -63,7 +63,7 @@ class Server
     {
         try {
             $this->adapter->send($connections, $message);
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'send');
             }
@@ -81,7 +81,7 @@ class Server
     {
         try {
             $this->adapter->close($connection, $code);
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'close');
             }
@@ -97,7 +97,7 @@ class Server
     {
         try {
             $this->adapter->onStart($callback);
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'onStart');
             }
@@ -115,7 +115,7 @@ class Server
     {
         try {
             $this->adapter->onWorkerStart($callback);
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'onWorkerStart');
             }
@@ -133,7 +133,7 @@ class Server
     {
         try {
             $this->adapter->onWorkerStop($callback);
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'onWorkerStop');
             }
@@ -151,7 +151,7 @@ class Server
     {
         try {
             $this->adapter->onOpen($callback);
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'onOpen');
             }
@@ -169,7 +169,7 @@ class Server
     {
         try {
             $this->adapter->onMessage($callback);
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'onMessage');
             }
@@ -187,7 +187,7 @@ class Server
     {
         try {
             $this->adapter->onClose($callback);
-        } catch(Throwable $error) {
+        } catch (Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
                 $errorCallback($error, 'onClose');
             }

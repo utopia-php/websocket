@@ -3,13 +3,15 @@
 namespace Utopia\WebSocket\Tests;
 
 use PHPUnit\Framework\TestCase;
-use WebSocket\Client as WebSocketClient;
+use Utopia\WebSocket\Client;
+
+use function Swoole\Coroutine\run;
 
 class AdapterTest extends TestCase
 {
-    private function getWebsocket(string $host, int $port): WebSocketClient
+    private function getWebsocket(string $host, int $port): Client
     {
-        return new WebSocketClient('ws://' . $host . ':' . $port, [
+        return new Client('ws://' . $host . ':' . $port, [
             'timeout' => 10,
         ]);
     }
@@ -30,35 +32,46 @@ class AdapterTest extends TestCase
 
     private function testServer(string $host, int $port): void
     {
-        $client = $this->getWebsocket($host, $port);
-        $client->send('ping');
-        $this->assertEquals('pong', $client->receive());
-        $this->assertEquals(true, $client->isConnected());
+        run(function () use ($host, $port) {
+            $client = $this->getWebsocket($host, $port);
+            $client->connect();
 
-        $clientA = $this->getWebsocket($host, $port);
-        $clientB = $this->getWebsocket($host, $port);
+            $client->send('ping');
+            $this->assertEquals('pong', $client->receive());
+            $this->assertEquals(true, $client->isConnected());
 
-        $clientA->send('ping');
-        $this->assertEquals('pong', $clientA->receive());
-        $clientB->send('pong');
-        $this->assertEquals('ping', $clientB->receive());
+            $clientA = $this->getWebsocket($host, $port);
+            $clientA->connect();
+            $clientB = $this->getWebsocket($host, $port);
+            $clientB->connect();
 
-        $clientA->send('broadcast');
-        $this->assertEquals('broadcast', $client->receive());
-        $this->assertEquals('broadcast', $clientA->receive());
-        $this->assertEquals('broadcast', $clientB->receive());
+            $clientA->send('ping');
+            $this->assertEquals('pong', $clientA->receive());
+            $clientB->send('pong');
+            $this->assertEquals('ping', $clientB->receive());
 
-        $clientB->send('broadcast');
-        $this->assertEquals('broadcast', $client->receive());
-        $this->assertEquals('broadcast', $clientA->receive());
-        $this->assertEquals('broadcast', $clientB->receive());
+            $clientA->send('broadcast');
+            $this->assertEquals('broadcast', $client->receive());
+            $this->assertEquals('broadcast', $clientA->receive());
+            $this->assertEquals('broadcast', $clientB->receive());
 
-        $clientA->close();
-        $clientB->close();
+            $clientB->send('broadcast');
+            $this->assertEquals('broadcast', $client->receive());
+            $this->assertEquals('broadcast', $clientA->receive());
+            $this->assertEquals('broadcast', $clientB->receive());
 
-        $client->send('disconnect');
-        $this->assertEquals('disconnect', $client->receive());
-        $this->expectException(\Throwable::class);
-        $client->receive();
+            $clientA->close();
+            $clientB->close();
+
+            $client->send('disconnect');
+            $this->assertEquals('disconnect', $client->receive());
+
+            try {
+                $client->receive();
+                $this->fail('Expected RuntimeException was not thrown');
+            } catch (\RuntimeException $e) {
+                $this->assertStringContainsString('Failed to receive data:', $e->getMessage());
+            }
+        });
     }
 }
