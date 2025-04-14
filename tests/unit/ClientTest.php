@@ -188,4 +188,21 @@ class ClientTest extends TestCase
         $this->assertTrue($errorReceived);
         $this->assertFalse($this->client->isConnected());
     }
+
+    public function testHasIncomingMessage(): void
+    {
+        $swooleClient = $this->createMock(\Swoole\Coroutine\Http\Client::class);
+        $swooleClient->method('recv')
+            ->willReturnOnConsecutiveCalls(
+                new \Swoole\WebSocket\Frame(),
+                false
+            );
+
+        $reflectionClass = new \ReflectionClass(Client::class);
+        $reflectionClass->getProperty('connected')->setValue($this->client, true);
+        $reflectionClass->getProperty('client')->setValue($this->client, $swooleClient);
+
+        $this->assertTrue($this->client->hasIncomingMessage());
+        $this->assertFalse($this->client->hasIncomingMessage());
+    }
 }

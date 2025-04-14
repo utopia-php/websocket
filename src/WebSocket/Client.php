@@ -4,6 +4,9 @@ namespace Utopia\WebSocket;
 
 use Swoole\Coroutine\Http\Client as SwooleClient;
 use Swoole\WebSocket\Frame;
+use Swoole\Coroutine;
+
+use function Swoole\Coroutine\run as Co;
 
 class Client
 {
@@ -50,62 +53,95 @@ class Client
         $this->timeout = $options['timeout'] ?? 30;
     }
 
+    /**
+     * Ensures code runs in a coroutine context
+     * @param callable $callback Function to run in coroutine
+     * @return mixed Result of the callback
+     * @throws \Throwable If the callback throws an exception
+     */
+    private function ensureCoroutine(callable $callback): mixed
+    {
+        if (Coroutine::getCid() === -1) {
+            $result = null;
+            $exception = null;
+
+            Co(function () use ($callback, &$result, &$exception) {
+                try {
+                    $result = $callback();
+                } catch (\Throwable $e) {
+                    $exception = $e;
+                }
+            });
+
+            if ($exception !== null) {
+                throw $exception;
+            }
+
+            return $result;
+        }
+        return $callback();
+    }
+
     public function connect(): void
     {
-        $this->client = new SwooleClient($this->host, $this->port, $this->port === 443);
-        $this->client->set([
-            'timeout' => $this->timeout,
-            'websocket_compression' => true,
-            'max_frame_size' => 32 * 1024 * 1024, // 32MB max frame size
-        ]);
+        $this->ensureCoroutine(function () {
+            $this->client = new SwooleClient($this->host, $this->port, $this->port === 443);
+            $this->client->set([
+                'timeout' => $this->timeout,
+                'websocket_compression' => true,
+                'max_frame_size' => 32 * 1024 * 1024, // 32MB max frame size
+            ]);
 
-        if (!empty($this->headers)) {
-            $this->client->setHeaders($this->headers);
-        }
+            if (!empty($this->headers)) {
+                $this->client->setHeaders($this->headers);
+            }
 
-        $success = $this->client->upgrade($this->path);
+            $success = $this->client->upgrade($this->path);
 
-        if (!$success) {
-            $error = new \RuntimeException(
-                "WebSocket connection failed: {$this->client->errCode} - {$this->client->errMsg}"
-            );
-            $this->emit('error', $error);
-            throw $error;
-        }
+            if (!$success) {
+                $error = new \RuntimeException(
+                    "WebSocket connection failed: {$this->client->errCode} - {$this->client->errMsg}"
+                );
+                $this->emit('error', $error);
+                throw $error;
+            }
 
-        $this->connected = true;
-        $this->emit('open');
+            $this->connected = true;
+            $this->emit('open');
+        });
     }
 
     public function listen(): void
     {
-        while ($this->connected) {
-            try {
-                $frame = $this->client->recv($this->timeout);
+        $this->ensureCoroutine(function () {
+            while ($this->connected) {
+                try {
+                    $frame = $this->client->recv($this->timeout);
 
-                if ($frame === false) {
-                    if ($this->client->errCode === SWOOLE_ERROR_CLIENT_NO_CONNECTION) {
-                        $this->handleClose();
-                        break;
+                    if ($frame === false) {
+                        if ($this->client->errCode === SWOOLE_ERROR_CLIENT_NO_CONNECTION) {
+                            $this->handleClose();
+                            break;
+                        }
+                        throw new \RuntimeException(
+                            "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
+                        );
                     }
-                    throw new \RuntimeException(
-                        "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
-                    );
-                }
 
-                if ($frame === "") {
-                    continue;
-                }
+                    if ($frame === "") {
+                        continue;
+                    }
 
-                if ($frame instanceof Frame) {
-                    $this->handleFrame($frame);
+                    if ($frame instanceof Frame) {
+                        $this->handleFrame($frame);
+                    }
+                } catch (\Throwable $e) {
+                    $this->emit('error', $e);
+                    $this->handleClose();
+                    break;
                 }
-            } catch (\Throwable $e) {
-                $this->emit('error', $e);
-                $this->handleClose();
-                break;
             }
-        }
+        });
     }
 
     private function handleFrame(Frame $frame): void
@@ -138,18 +174,25 @@ class Client
 
     public function send(string $data): void
     {
-        if (!$this->connected) {
-            throw new \RuntimeException('Not connected to WebSocket server');
-        }
+        try {
+            $this->ensureCoroutine(function () use ($data) {
+                if (!$this->connected) {
+                    throw new \RuntimeException('Not connected to WebSocket server');
+                }
 
-        $success = $this->client->push($data);
+                $success = $this->client->push($data);
 
-        if ($success === false) {
-            $error = new \RuntimeException(
-                "Failed to send data: {$this->client->errCode} - {$this->client->errMsg}"
-            );
-            $this->emit('error', $error);
-            throw $error;
+                if ($success === false) {
+                    $error = new \RuntimeException(
+                        "Failed to send data: {$this->client->errCode} - {$this->client->errMsg}"
+                    );
+                    $this->emit('error', $error);
+                    throw $error;
+                }
+            });
+        } catch (\Throwable $e) {
+            $this->emit('error', $e);
+            throw $e;
         }
     }
 
@@ -223,43 +266,61 @@ class Client
 
     public function receive(): ?string
     {
-        if (!$this->connected) {
-            throw new \RuntimeException('Not connected to WebSocket server');
-        }
-
-        $frame = $this->client->recv($this->timeout);
-
-        if ($frame === false) {
-            if ($this->client->errCode === SWOOLE_ERROR_CLIENT_NO_CONNECTION) {
-                $this->handleClose();
-                return null;
+        /** @var string|null */
+        return $this->ensureCoroutine(function (): ?string {
+            if (!$this->connected) {
+                throw new \RuntimeException('Not connected to WebSocket server');
             }
-            throw new \RuntimeException(
-                "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
-            );
-        }
 
-        if ($frame === "") {
-            return null;
-        }
+            $frame = $this->client->recv($this->timeout);
 
-        if ($frame instanceof Frame) {
-            switch ($frame->opcode) {
-                case WEBSOCKET_OPCODE_TEXT:
-                    return $frame->data;
-                case WEBSOCKET_OPCODE_CLOSE:
+            if ($frame === false) {
+                if ($this->client->errCode === SWOOLE_ERROR_CLIENT_NO_CONNECTION) {
                     $this->handleClose();
                     return null;
-                case WEBSOCKET_OPCODE_PING:
-                    $this->emit('ping', $frame->data);
-                    $this->client->push('', WEBSOCKET_OPCODE_PONG);
-                    return null;
-                case WEBSOCKET_OPCODE_PONG:
-                    $this->emit('pong', $frame->data);
-                    return null;
+                }
+                throw new \RuntimeException(
+                    "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
+                );
             }
-        }
 
-        return null;
+            if ($frame === "") {
+                return null;
+            }
+
+            if ($frame instanceof Frame) {
+                switch ($frame->opcode) {
+                    case WEBSOCKET_OPCODE_TEXT:
+                        return $frame->data;
+                    case WEBSOCKET_OPCODE_CLOSE:
+                        $this->handleClose();
+                        return null;
+                    case WEBSOCKET_OPCODE_PING:
+                        $this->emit('ping', $frame->data);
+                        $this->client->push('', WEBSOCKET_OPCODE_PONG);
+                        return null;
+                    case WEBSOCKET_OPCODE_PONG:
+                        $this->emit('pong', $frame->data);
+                        return null;
+                }
+            }
+
+            return null;
+        });
+    }
+
+    /**
+     * Check if there is an incoming message available without consuming it
+     */
+    public function hasIncomingMessage(): bool
+    {
+        return (bool) $this->ensureCoroutine(function (): bool {
+            if (!$this->connected) {
+                return false;
+            }
+
+            // Small timeout to check if there is an incoming message
+            return $this->client->recv(0.001) !== false;
+        });
     }
 }
