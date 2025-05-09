@@ -246,6 +246,7 @@ class Client
         if ($frame instanceof Frame) {
             switch ($frame->opcode) {
                 case WEBSOCKET_OPCODE_TEXT:
+                    $this->emit('message', $frame->data);
                     return $frame->data;
                 case WEBSOCKET_OPCODE_CLOSE:
                     $this->handleClose();
