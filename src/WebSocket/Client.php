@@ -88,6 +88,9 @@ class Client
                         $this->handleClose();
                         break;
                     }
+                    if ($this->client->errCode === 110) {
+                        continue;
+                    }
                     throw new \RuntimeException(
                         "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
                     );
