@@ -3,6 +3,8 @@
 require_once __DIR__.'/../../../vendor/autoload.php';
 
 use Utopia\WebSocket;
+use Workerman\Connection\TcpConnection;
+use Workerman\Protocols\Http\Request;
 
 $adapter = new WebSocket\Adapter\Workerman();
 $adapter->setWorkerNumber(1); // Important for tests
@@ -39,6 +41,29 @@ $server
                 $server->send([$connection], 'disconnect');
                 $server->close($connection, 1000);
                 break;
+        }
+    })
+    ->onRequest(function (TcpConnection $connection, Request $request) use ($server) {
+        echo 'HTTP request received: ', $request->path(), PHP_EOL;
+
+        if ($request->path() === '/health') {
+            $connection->send('HTTP/1.1 200 OK' . "\r\n" .
+                             'Content-Type: application/json' . "\r\n" .
+                             'Connection: close' . "\r\n\r\n" .
+                             json_encode(['status' => 'ok', 'message' => 'WebSocket server is running']));
+        } elseif ($request->path() === '/info') {
+            $connection->send('HTTP/1.1 200 OK' . "\r\n" .
+                             'Content-Type: application/json' . "\r\n" .
+                             'Connection: close' . "\r\n\r\n" .
+                             json_encode([
+                                 'server' => 'Workerman WebSocket',
+                                 'connections' => count($server->getConnections()),
+                                 'timestamp' => time()
+                             ]));
+        } else {
+            $connection->send('HTTP/1.1 404 Not Found' . "\r\n" .
+                             'Connection: close' . "\r\n\r\n" .
+                             'Not Found');
         }
     })
     ->start();

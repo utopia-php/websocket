@@ -3,6 +3,7 @@
 namespace Utopia\WebSocket\Adapter;
 
 use Swoole\Http\Request;
+use Swoole\Http\Response;
 use Swoole\Process;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
@@ -120,6 +121,15 @@ class Swoole extends Adapter
             unset(self::$connections[$fd]);
 
             call_user_func($callback, $fd);
+        });
+
+        return $this;
+    }
+
+    public function onRequest(callable $callback): self
+    {
+        $this->server->on('request', function (Request $request, Response $response) use ($callback) {
+            call_user_func($callback, $request, $response);
         });
 
         return $this;

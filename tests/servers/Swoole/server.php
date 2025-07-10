@@ -3,6 +3,7 @@
 require_once __DIR__.'/../../../vendor/autoload.php';
 
 use Swoole\Http\Request;
+use Swoole\Http\Response;
 use Utopia\WebSocket;
 
 $adapter = new WebSocket\Adapter\Swoole();
@@ -40,6 +41,26 @@ $server
                 $server->send([$connection], 'disconnect');
                 $server->close($connection, 1000);
                 break;
+        }
+    })
+    ->onRequest(function (Request $request, Response $response) use ($server) {
+        echo 'HTTP request received: ', $request->server['request_uri'], PHP_EOL;
+
+        if ($request->server['request_uri'] === '/health') {
+            $response->header('Content-Type', 'application/json');
+            $response->status(200);
+            $response->end(json_encode(['status' => 'ok', 'message' => 'WebSocket server is running']));
+        } elseif ($request->server['request_uri'] === '/info') {
+            $response->header('Content-Type', 'application/json');
+            $response->status(200);
+            $response->end(json_encode([
+                'server' => 'Swoole WebSocket',
+                'connections' => count($server->getConnections()),
+                'timestamp' => time()
+            ]));
+        } else {
+            $response->status(404);
+            $response->end('Not Found');
         }
     })
     ->start();

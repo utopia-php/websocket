@@ -104,6 +104,13 @@ class Workerman extends Adapter
         return $this;
     }
 
+    public function onRequest(callable $callback): self
+    {
+        $this->server->onRequest = $callback;
+
+        return $this;
+    }
+
     public function setPackageMaxLength(int $bytes): self
     {
         return $this;

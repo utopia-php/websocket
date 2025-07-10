@@ -83,6 +83,13 @@ abstract class Adapter
     abstract public function onMessage(callable $callback): self;
 
     /**
+     * Is called when an HTTP request is received.
+     * @param callable $callback
+     * @return self
+     */
+    abstract public function onRequest(callable $callback): self;
+
+    /**
      * Is called when a connection is closed.
      * @param callable $callback
      * @return self
