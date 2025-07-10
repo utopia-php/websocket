@@ -5,6 +5,7 @@ namespace Utopia\WebSocket\Adapter;
 use Utopia\WebSocket\Adapter;
 use Workerman\Connection\TcpConnection;
 use Workerman\Worker;
+use Workerman\Protocols\Http\Request;
 
 class Workerman extends Adapter
 {
@@ -15,6 +16,10 @@ class Workerman extends Adapter
     protected int $port;
 
     private mixed $callbackOnStart;
+
+    private mixed $callbackOnMessage;
+
+    private mixed $callbackOnRequest;
 
     public function __construct(string $host = '0.0.0.0', int $port = 80)
     {
@@ -88,9 +93,8 @@ class Workerman extends Adapter
 
     public function onMessage(callable $callback): self
     {
-        $this->server->onMessage = function (TcpConnection $connection, string $data) use ($callback): void {
-            call_user_func($callback, $connection->id, $data);
-        };
+        $this->callbackOnMessage = $callback;
+        $this->setupMessageHandler();
 
         return $this;
     }
@@ -106,9 +110,28 @@ class Workerman extends Adapter
 
     public function onRequest(callable $callback): self
     {
-        $this->server->onRequest = $callback;
+        $this->callbackOnRequest = $callback;
+        $this->setupMessageHandler();
 
         return $this;
+    }
+
+    /**
+     * Sets up the unified message handler that routes between WebSocket messages and HTTP requests
+     */
+    private function setupMessageHandler(): void
+    {
+        $this->server->onMessage = function (TcpConnection $connection, $data) {
+            if ($data instanceof Request) {
+                if (is_callable($this->callbackOnRequest)) {
+                    call_user_func($this->callbackOnRequest, $connection, $data);
+                }
+            } elseif (is_string($data)) {
+                if (is_callable($this->callbackOnMessage)) {
+                    call_user_func($this->callbackOnMessage, $connection->id, $data);
+                }
+            }
+        };
     }
 
     public function setPackageMaxLength(int $bytes): self

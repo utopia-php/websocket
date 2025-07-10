@@ -44,9 +44,13 @@ $server
         }
     })
     ->onRequest(function (TcpConnection $connection, Request $request) use ($server) {
-        echo 'HTTP request received: ', $request->path(), PHP_EOL;
+        $path = $request->path();
+        if (!is_string($path)) {
+            throw new \Exception('Invalid path ' . $path . ' for request: ' . json_encode($request, JSON_PRETTY_PRINT));
+        }
+        echo 'HTTP request received: ', $path, PHP_EOL;
 
-        if ($request->path() === '/health') {
+        if ($path === '/health') {
             $connection->send('HTTP/1.1 200 OK' . "\r\n" .
                              'Content-Type: application/json' . "\r\n" .
                              'Connection: close' . "\r\n\r\n" .
