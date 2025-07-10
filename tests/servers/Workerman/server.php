@@ -55,7 +55,7 @@ $server
                              'Content-Type: application/json' . "\r\n" .
                              'Connection: close' . "\r\n\r\n" .
                              json_encode(['status' => 'ok', 'message' => 'WebSocket server is running']));
-        } elseif ($request->path() === '/info') {
+        } elseif ($path === '/info') {
             $connection->send('HTTP/1.1 200 OK' . "\r\n" .
                              'Content-Type: application/json' . "\r\n" .
                              'Connection: close' . "\r\n\r\n" .
