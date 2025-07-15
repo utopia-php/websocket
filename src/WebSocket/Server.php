@@ -197,6 +197,24 @@ class Server
     }
 
     /**
+     * Is called when an HTTP request is received.
+     * @param callable $callback
+     * @return self
+     */
+    public function onRequest(callable $callback): self
+    {
+        try {
+            $this->adapter->onRequest($callback);
+        } catch (Throwable $error) {
+            foreach ($this->errorCallbacks as $errorCallback) {
+                $errorCallback($error, 'onRequest');
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Returns all connections.
      *
      * @return array<mixed>
