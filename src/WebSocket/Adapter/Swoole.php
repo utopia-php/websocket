@@ -44,14 +44,19 @@ class Swoole extends Adapter
 
     public function send(array $connections, string $message): void
     {
+        $flags = SWOOLE_WEBSOCKET_FLAG_FIN;
+        if ($this->config['websocket_compression'] ?? false) {
+            $flags |= SWOOLE_WEBSOCKET_FLAG_COMPRESS;
+        }
+
         foreach ($connections as $connection) {
-            go(function () use ($connection, $message) {
+            go(function () use ($connection, $message, $flags) {
                 if ($this->server->exist($connection) && $this->server->isEstablished($connection)) {
                     $this->server->push(
                         $connection,
                         $message,
                         SWOOLE_WEBSOCKET_OPCODE_TEXT,
-                        SWOOLE_WEBSOCKET_FLAG_FIN | SWOOLE_WEBSOCKET_FLAG_COMPRESS
+                        $flags
                     );
                 } else {
                     $this->server->close($connection);
