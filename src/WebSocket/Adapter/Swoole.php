@@ -109,6 +109,9 @@ class Swoole extends Adapter
     public function onMessage(callable $callback): self
     {
         $this->server->on('message', function (Server $server, Frame $frame) use ($callback) {
+            if ($frame->data === '' || $frame->data === null) {
+                return;
+            }
             call_user_func($callback, $frame->fd, $frame->data);
         });
 
