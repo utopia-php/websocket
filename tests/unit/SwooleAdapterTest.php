@@ -9,6 +9,9 @@ use Utopia\WebSocket\Adapter\Swoole;
 
 class SwooleAdapterTest extends TestCase
 {
+    /**
+     * @return array{0: Swoole, 1: \PHPUnit\Framework\MockObject\MockObject}
+     */
     private function createAdapterWithMockServer(): array
     {
         try {
