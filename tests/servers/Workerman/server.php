@@ -2,12 +2,12 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use Utopia\WebSocket;
+use Utopia\MQTT;
 
-$adapter = new WebSocket\Adapter\Workerman();
+$adapter = new MQTT\Adapter\Workerman();
 $adapter->setWorkerNumber(1); // Important for tests
 
-$server = new WebSocket\Server($adapter);
+$server = new MQTT\Server($adapter);
 
 $server
     ->onWorkerStart(function (int $workerId) {

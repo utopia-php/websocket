@@ -1,10 +1,10 @@
-# Utopia WebSocket
+# Utopia MQTT
 
-[![Build Status](https://travis-ci.com/utopia-php/system.svg?branch=main)](https://travis-ci.com/utopia-php/websocket)
-![Total Downloads](https://img.shields.io/packagist/dt/utopia-php/websocket.svg)
+[![Build Status](https://travis-ci.com/utopia-php/system.svg?branch=main)](https://travis-ci.com/utopia-php/mqtt)
+![Total Downloads](https://img.shields.io/packagist/dt/utopia-php/mqtt.svg)
 [![Discord](https://img.shields.io/discord/564160730845151244?label=discord)](https://appwrite.io/discord)
 
-Utopia WebSocket is a simple and lite abstraction layer around a WebSocket server. This library is aiming to be as simple and easy to learn and use. This library is maintained by the [Appwrite team](https://appwrite.io).
+Utopia MQTT is a simple and lite abstraction layer around an MQTT server. This library is aiming to be as simple and easy to learn and use. This library is maintained by the [Appwrite team](https://appwrite.io).
 
 Although this library is part of the [Utopia Framework](https://github.com/utopia-php/framework) project it is dependency free and can be used as standalone with any other PHP project or framework.
 
@@ -12,7 +12,7 @@ Although this library is part of the [Utopia Framework](https://github.com/utopi
 
 Install using composer:
 ```bash
-composer require utopia-php/websocket
+composer require utopia-php/mqtt
 ```
 
 Init in your application:
@@ -21,12 +21,13 @@ Init in your application:
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use Utopia\WebSocket;
+use Utopia\MQTT;
 
-$adapter = new WebSocket\Adapter\Swoole();
+$adapter = new MQTT\Adapter\Swoole();
 $adapter->setPackageMaxLength(64000);
 
-$server = new WebSocket\Server($adapter);
+$server = new MQTT\Server($adapter);
+
 $server->onStart(function () {
     echo "Server started!";
 });

@@ -3585,7 +3585,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "WebSocket\\": "lib"
+                    "MQTT\\": "lib"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3601,7 +3601,7 @@
                     "email": "soren@abicart.se"
                 }
             ],
-            "description": "WebSocket client and server",
+            "description": "MQTT client and server",
             "support": {
                 "issues": "https://github.com/Textalk/websocket-php/issues",
                 "source": "https://github.com/Textalk/websocket-php/tree/1.5.2"

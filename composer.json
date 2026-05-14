@@ -1,15 +1,15 @@
 {
-    "name": "utopia-php/websocket",
-    "description": "A simple abstraction for WebSocket servers.",
+    "name": "utopia-php/mqtt",
+    "description": "A simple abstraction for MQTT servers.",
     "type": "library",
-    "keywords": ["php","framework", "upf", "utopia", "websocket"],
+    "keywords": ["php","framework", "upf", "utopia", "mqtt"],
     "license": "MIT",
     "scripts": {
         "check": "./vendor/bin/phpstan analyse --level max src tests"
     },
     "minimum-stability": "stable",
     "autoload": {
-        "psr-4": {"Utopia\\WebSocket\\": "src/WebSocket"}
+        "psr-4": {"Utopia\\MQTT\\": "src/MQTT"}
     },
     "require": {
         "php": ">=8.0"

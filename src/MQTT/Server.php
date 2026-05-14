@@ -1,9 +1,9 @@
 <?php
-namespace Utopia\WebSocket;
+namespace Utopia\MQTT;
 
 use Exception;
 use Throwable;
-use Utopia\WebSocket\Adapter;
+use Utopia\MQTT\Adapter;
 
 
 class Server
@@ -19,7 +19,7 @@ class Server
     protected Adapter $adapter;
 
     /**
-     * Creates an instance of a WebSocker server.
+     * Creates an instance of a MQTT server.
      * @param Adapter $adapter 
      */
     public function __construct(Adapter $adapter)
@@ -28,7 +28,7 @@ class Server
     }
 
     /**
-     * Starts the WebSocket server.
+     * Starts the MQTT server.
      * @return void 
      */
     public function start(): void
@@ -43,7 +43,7 @@ class Server
     }
 
     /**
-     * Shuts down the WebSocket server.
+     * Shuts down the MQTT server.
      * @return void 
      */
     public function shutdown(): void
@@ -131,13 +131,13 @@ class Server
      * @param callable $callback 
      * @return self 
      */
-    public function onOpen(callable $callback): self
+    public function onConnect(callable $callback): self
     {
         try {
-            $this->adapter->onOpen($callback);
+            $this->adapter->onConnect($callback);
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "onOpen");
+                $errorCallback($error, "onConnect");
             }
         }
 
@@ -149,13 +149,13 @@ class Server
      * @param callable $callback 
      * @return self 
      */
-    public function onMessage(callable $callback): self
+    public function onReceive(callable $callback): self
     {
         try {
-            $this->adapter->onMessage($callback);
+            $this->adapter->onReceive($callback);
         } catch(Throwable $error) {
             foreach ($this->errorCallbacks as $errorCallback) {
-                $errorCallback($error, "onMessage");
+                $errorCallback($error, "onReceive");
             }
         }
 
@@ -164,8 +164,8 @@ class Server
 
     /**
      * Is called when a connection is closed.
-     * @param callable $callback 
-     * @return self 
+     * @param callable $callback
+     * @return self
      */
     public function onClose(callable $callback): self
     {

@@ -1,12 +1,12 @@
 <?php
 use PHPUnit\Framework\TestCase;
-use WebSocket\Client as WebSocketClient;
+use MQTT\Client as MQTTClient;
 
 class SwooleTest extends TestCase
 {
-    private function getWebsocket(string $server, int $port): WebSocketClient
+    private function getMQTT(string $server, int $port): MQTTClient
     {
-        return new WebSocketClient('ws://'.$server.':'.$port, [
+        return new MQTTClient('ws://'.$server.':'.$port, [
             'timeout' => 10,
         ]);
     }
@@ -27,13 +27,13 @@ class SwooleTest extends TestCase
 
     private function testServer(int $port) :void
     {
-        $client = $this->getWebsocket('localhost', $port);
+        $client = $this->getMQTT('localhost', $port);
         $client->send('ping');
         $this->assertEquals('pong', $client->receive());
         $this->assertEquals(true, $client->isConnected());
 
-        $clientA = $this->getWebsocket('localhost', $port);
-        $clientB = $this->getWebsocket('localhost', $port);
+        $clientA = $this->getMQTT('localhost', $port);
+        $clientB = $this->getMQTT('localhost', $port);
 
         $clientA->send('ping');
         $this->assertEquals('pong', $clientA->receive());

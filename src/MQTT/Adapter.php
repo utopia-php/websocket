@@ -1,5 +1,5 @@
 <?php
-namespace Utopia\WebSocket;
+namespace Utopia\MQTT;
 
 
 abstract class Adapter
@@ -64,19 +64,19 @@ abstract class Adapter
      * @param callable $callback 
      * @return self 
      */
-    public abstract function onOpen(callable $callback): self;
+    public abstract function onConnect(callable $callback): self;
 
     /**
      * Is called when a message is received.
      * @param callable $callback 
      * @return self 
      */
-    public abstract function onMessage(callable $callback): self;
+    public abstract function onReceive(callable $callback): self;
 
     /**
      * Is called when a connection is closed.
-     * @param callable $callback 
-     * @return self 
+     * @param callable $callback
+     * @return self
      */
     public abstract function onClose(callable $callback): self;
 
@@ -86,13 +86,6 @@ abstract class Adapter
      * @return Adapter 
      */
     public abstract function setPackageMaxLength(int $bytes): self;
-
-    /**
-     * Enables/Disables compression.
-     * @param bool $enabled 
-     * @return Adapter 
-     */
-    public abstract function setCompressionEnabled(bool $enabled): self;
 
     /**
      * Sets the number of workers.
@@ -112,4 +105,27 @@ abstract class Adapter
      * @return array<mixed>
      */
     public abstract function getConnections(): array;
+
+    protected function decodeValue($data): int
+    {
+        return 256 * ord($data[0]) + ord($data[1]);
+    }
+
+    protected function decodeString($data): string
+    {
+        $length = $this->decodeValue($data);
+        return substr($data, 2, $length);
+    }
+
+    protected function getHeaders($data)
+    {
+        $byte = ord($data[0]);
+
+        $header['type'] = ($byte & 0xF0) >> 4;
+        $header['dup'] = ($byte & 0x08) >> 3;
+        $header['qos'] = ($byte & 0x06) >> 1;
+        $header['retain'] = $byte & 0x01;
+
+        return $header;
+    }
 }
