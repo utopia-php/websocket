@@ -215,16 +215,6 @@ class Server
     }
 
     /**
-     * Returns all connections.
-     *
-     * @return array<mixed>
-     */
-    public function getConnections(): array
-    {
-        return $this->adapter->getConnections();
-    }
-
-    /**
      * Register callback. Will be executed when error occurs.
      *
      * @param  callable  $callback

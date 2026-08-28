@@ -155,9 +155,4 @@ class Workerman extends Adapter
     {
         return $this->server;
     }
-
-    public function getConnections(): array
-    {
-        return array_keys(TcpConnection::$connections);
-    }
 }

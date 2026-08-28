@@ -122,11 +122,4 @@ abstract class Adapter
      * @return mixed
      */
     abstract public function getNative(): mixed;
-
-    /**
-     * Returns all connections.
-     *
-     * @return array<mixed>
-     */
-    abstract public function getConnections(): array;
 }

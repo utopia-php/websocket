@@ -16,10 +16,6 @@ class Swoole extends Adapter
     protected string $host;
 
     protected int $port;
-    /**
-    * @var array<int|string,bool|int|string>
-    */
-    private static array $connections = [];
 
     public function __construct(string $host = '0.0.0.0', int $port = 80)
     {
@@ -103,8 +99,6 @@ class Swoole extends Adapter
     public function onOpen(callable $callback): self
     {
         $this->server->on('open', function (Server $server, Request $request) use ($callback) {
-            self::$connections[$request->fd] = true;
-
             call_user_func($callback, $request->fd, $request);
         });
 
@@ -123,8 +117,6 @@ class Swoole extends Adapter
     public function onClose(callable $callback): self
     {
         $this->server->on('close', function (Server $server, int $fd) use ($callback) {
-            unset(self::$connections[$fd]);
-
             call_user_func($callback, $fd);
         });
 
@@ -164,10 +156,5 @@ class Swoole extends Adapter
     public function getNative(): Server
     {
         return $this->server;
-    }
-
-    public function getConnections(): array
-    {
-        return array_keys(self::$connections);
     }
 }
