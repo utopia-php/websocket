@@ -48,7 +48,7 @@ $server
                 break;
         }
     })
-    ->onRequest(function (Request $request, Response $response) use ($server, &$connections) {
+    ->onRequest(function (Request $request, Response $response) use (&$connections) {
         echo 'HTTP request received: ', $request->server['request_uri'], PHP_EOL;
 
         if ($request->server['request_uri'] === '/health') {

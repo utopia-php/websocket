@@ -48,7 +48,7 @@ $server
                 break;
         }
     })
-    ->onRequest(function (TcpConnection $connection, Request $request) use ($server, &$connections) {
+    ->onRequest(function (TcpConnection $connection, Request $request) use (&$connections) {
         $path = $request->path();
         if (!is_string($path)) {
             throw new \Exception('Invalid path ' . $path . ' for request: ' . json_encode($request, JSON_PRETTY_PRINT));
