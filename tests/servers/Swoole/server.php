@@ -11,6 +11,9 @@ $adapter->setWorkerNumber(1); // Important for tests
 
 $server = new WebSocket\Server($adapter);
 
+/** @var array<int,bool> $connections */
+$connections = [];
+
 $server
     ->onWorkerStart(function (int $workerId) {
         echo 'worker started ', $workerId, PHP_EOL;
@@ -18,13 +21,15 @@ $server
     ->onWorkerStop(function (int $workerId) {
         echo "worker stopped ", $workerId, PHP_EOL;
     })
-    ->onOpen(function (int $connection, Request $request) {
+    ->onOpen(function (int $connection, Request $request) use (&$connections) {
+        $connections[$connection] = true;
         echo 'connected ', $connection, PHP_EOL;
     })
-    ->onClose(function (int $connection) {
+    ->onClose(function (int $connection) use (&$connections) {
+        unset($connections[$connection]);
         echo 'disconnected ', $connection, PHP_EOL;
     })
-    ->onMessage(function (int $connection, string $message) use ($server) {
+    ->onMessage(function (int $connection, string $message) use ($server, &$connections) {
         echo $message, PHP_EOL;
 
         switch ($message) {
@@ -35,7 +40,7 @@ $server
                 $server->send([$connection], 'ping');
                 break;
             case 'broadcast':
-                $server->send($server->getConnections(), 'broadcast');
+                $server->send(array_keys($connections), 'broadcast');
                 break;
             case 'disconnect':
                 $server->send([$connection], 'disconnect');
@@ -43,7 +48,7 @@ $server
                 break;
         }
     })
-    ->onRequest(function (Request $request, Response $response) use ($server) {
+    ->onRequest(function (Request $request, Response $response) use ($server, &$connections) {
         echo 'HTTP request received: ', $request->server['request_uri'], PHP_EOL;
 
         if ($request->server['request_uri'] === '/health') {
@@ -55,7 +60,7 @@ $server
             $response->status(200);
             $response->end(json_encode([
                 'server' => 'Swoole WebSocket',
-                'connections' => count($server->getConnections()),
+                'connections' => count($connections),
                 'timestamp' => time()
             ]));
         } else {
