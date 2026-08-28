@@ -47,14 +47,24 @@ class Swoole extends Adapter
 
         foreach ($connections as $connection) {
             go(function () use ($connection, $message, $flags) {
-                if ($this->server->exist($connection) && $this->server->isEstablished($connection)) {
-                    $this->server->push(
-                        $connection,
-                        $message,
-                        SWOOLE_WEBSOCKET_OPCODE_TEXT,
-                        $flags
-                    );
-                } else {
+                if (!$this->server->exist($connection) || !$this->server->isEstablished($connection)) {
+                    $this->server->close($connection);
+
+                    return;
+                }
+
+                $pushed = $this->server->push(
+                    $connection,
+                    $message,
+                    SWOOLE_WEBSOCKET_OPCODE_TEXT,
+                    $flags
+                );
+
+                // Only reachable once setSocketBufferSize() has capped the buffer.
+                // The client is far enough behind that its output buffer is full;
+                // dropping the frame would leave it silently out of sync, so close
+                // and let it reconnect from a known state.
+                if (!$pushed) {
                     $this->server->close($connection);
                 }
             });
@@ -142,6 +152,28 @@ class Swoole extends Adapter
     public function setCompressionEnabled(bool $enabled): self
     {
         $this->config['websocket_compression'] = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * Caps the per-connection output buffer.
+     *
+     * Uncapped, a client that stops draining makes the reactor buffer every
+     * undelivered frame in process memory without limit, while push() still
+     * reports success: 300 non-draining connections held 2.27GB, all of it in
+     * the reactor rather than the PHP worker. Capped, memory is bounded by
+     * size x connections and push() returns false for a connection that is
+     * over, which send() turns into a close.
+     *
+     * `send_yield` is disabled alongside it. Left on, an over-budget push
+     * suspends and the worker accumulates the backlog against PHP's
+     * memory_limit instead, which fatals rather than shedding the connection.
+     */
+    public function setSocketBufferSize(int $bytes): self
+    {
+        $this->config['socket_buffer_size'] = $bytes;
+        $this->config['send_yield'] = false;
 
         return $this;
     }
