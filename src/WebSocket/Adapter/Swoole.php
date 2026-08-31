@@ -17,7 +17,20 @@ class Swoole extends Adapter
 
     protected int $port;
 
-    public function __construct(string $host = '0.0.0.0', int $port = 80)
+    /**
+     * @param int $socketBufferSize Bytes the reactor may hold per connection for a
+     *   client that is not keeping up; 0 leaves it uncapped, which is Swoole's default.
+     *
+     *   Uncapped, a client that stops draining makes the reactor buffer every
+     *   undelivered frame in process memory without limit while push() still reports
+     *   success: 300 non-draining connections held 2.27GB, all of it in the reactor
+     *   rather than the PHP worker. Capped, memory bounds at size x connections and
+     *   push() returns false for a connection that is over, which send() turns into a
+     *   close. Taken here rather than through a setter because it is read once, when
+     *   start() hands the config to Swoole, so changing it later would silently do
+     *   nothing.
+     */
+    public function __construct(string $host = '0.0.0.0', int $port = 80, int $socketBufferSize = 0)
     {
         parent::__construct($host, $port);
 
@@ -25,6 +38,14 @@ class Swoole extends Adapter
 
         // Set maximum connections to Swoole's limit of 1 Million
         $this->config['max_connection'] = 1_000_000;
+
+        if ($socketBufferSize > 0) {
+            $this->config['socket_buffer_size'] = $socketBufferSize;
+            // Left on, an over-budget push suspends and the worker accumulates the
+            // backlog against PHP's memory_limit, fatalling the worker instead of
+            // shedding the one connection that is behind.
+            $this->config['send_yield'] = false;
+        }
     }
 
     public function start(): void
@@ -60,7 +81,7 @@ class Swoole extends Adapter
                     $flags
                 );
 
-                // Only reachable once setSocketBufferSize() has capped the buffer.
+                // Only reachable when the buffer is capped (see $socketBufferSize).
                 // The client is far enough behind that its output buffer is full;
                 // dropping the frame would leave it silently out of sync, so close
                 // and let it reconnect from a known state.
@@ -152,28 +173,6 @@ class Swoole extends Adapter
     public function setCompressionEnabled(bool $enabled): self
     {
         $this->config['websocket_compression'] = $enabled;
-
-        return $this;
-    }
-
-    /**
-     * Caps the per-connection output buffer.
-     *
-     * Uncapped, a client that stops draining makes the reactor buffer every
-     * undelivered frame in process memory without limit, while push() still
-     * reports success: 300 non-draining connections held 2.27GB, all of it in
-     * the reactor rather than the PHP worker. Capped, memory is bounded by
-     * size x connections and push() returns false for a connection that is
-     * over, which send() turns into a close.
-     *
-     * `send_yield` is disabled alongside it. Left on, an over-budget push
-     * suspends and the worker accumulates the backlog against PHP's
-     * memory_limit instead, which fatals rather than shedding the connection.
-     */
-    public function setSocketBufferSize(int $bytes): self
-    {
-        $this->config['socket_buffer_size'] = $bytes;
-        $this->config['send_yield'] = false;
 
         return $this;
     }
