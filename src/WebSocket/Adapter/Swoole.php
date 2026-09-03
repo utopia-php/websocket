@@ -46,13 +46,13 @@ class Swoole extends Adapter
         }
 
         foreach ($connections as $connection) {
-            go(function () use ($connection, $message, $flags) {
+            go(function () use ($connection, $message, $flags): void {
                 if ($this->server->exist($connection) && $this->server->isEstablished($connection)) {
                     $this->server->push(
                         $connection,
                         $message,
                         SWOOLE_WEBSOCKET_OPCODE_TEXT,
-                        $flags
+                        $flags,
                     );
                 } else {
                     $this->server->close($connection);
@@ -68,10 +68,10 @@ class Swoole extends Adapter
 
     public function onStart(callable $callback): self
     {
-        $this->server->on('start', function () use ($callback) {
-            call_user_func($callback);
+        $this->server->on('start', function () use ($callback): void {
+            \call_user_func($callback);
 
-            Process::signal('2', function () {
+            Process::signal('2', function (): void {
                 $this->shutdown();
             });
         });
@@ -81,16 +81,16 @@ class Swoole extends Adapter
 
     public function onWorkerStart(callable $callback): self
     {
-        $this->server->on('workerStart', function (Server $server, int $workerId) use ($callback) {
-            call_user_func($callback, $workerId);
+        $this->server->on('workerStart', function (Server $server, int $workerId) use ($callback): void {
+            \call_user_func($callback, $workerId);
         });
         return $this;
     }
 
     public function onWorkerStop(callable $callback): Adapter
     {
-        $this->server->on('workerStop', function (Server $server, int $workerId) use ($callback) {
-            call_user_func($callback, $workerId);
+        $this->server->on('workerStop', function (Server $server, int $workerId) use ($callback): void {
+            \call_user_func($callback, $workerId);
         });
 
         return $this;
@@ -98,8 +98,8 @@ class Swoole extends Adapter
 
     public function onOpen(callable $callback): self
     {
-        $this->server->on('open', function (Server $server, Request $request) use ($callback) {
-            call_user_func($callback, $request->fd, $request);
+        $this->server->on('open', function (Server $server, Request $request) use ($callback): void {
+            \call_user_func($callback, $request->fd, $request);
         });
 
         return $this;
@@ -107,8 +107,8 @@ class Swoole extends Adapter
 
     public function onMessage(callable $callback): self
     {
-        $this->server->on('message', function (Server $server, Frame $frame) use ($callback) {
-            call_user_func($callback, $frame->fd, $frame->data);
+        $this->server->on('message', function (Server $server, Frame $frame) use ($callback): void {
+            \call_user_func($callback, $frame->fd, $frame->data);
         });
 
         return $this;
@@ -116,8 +116,8 @@ class Swoole extends Adapter
 
     public function onClose(callable $callback): self
     {
-        $this->server->on('close', function (Server $server, int $fd) use ($callback) {
-            call_user_func($callback, $fd);
+        $this->server->on('close', function (Server $server, int $fd) use ($callback): void {
+            \call_user_func($callback, $fd);
         });
 
         return $this;
@@ -125,8 +125,8 @@ class Swoole extends Adapter
 
     public function onRequest(callable $callback): self
     {
-        $this->server->on('request', function (Request $request, Response $response) use ($callback) {
-            call_user_func($callback, $request, $response);
+        $this->server->on('request', function (Request $request, Response $response) use ($callback): void {
+            \call_user_func($callback, $request, $response);
         });
 
         return $this;

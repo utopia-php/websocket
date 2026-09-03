@@ -1,5 +1,8 @@
 # Utopia WebSocket
 
+> [!IMPORTANT]
+> This repository is a read-only mirror of the [utopia-php monorepo](https://github.com/utopia-php/monorepo). Development happens in [`packages/websocket`](https://github.com/utopia-php/monorepo/tree/main/packages/websocket) — please open issues and pull requests there.
+
 [![Build Status](https://travis-ci.com/utopia-php/system.svg?branch=main)](https://travis-ci.com/utopia-php/websocket)
 ![Total Downloads](https://img.shields.io/packagist/dt/utopia-php/websocket.svg)
 [![Discord](https://img.shields.io/discord/564160730845151244?label=discord)](https://appwrite.io/discord)
@@ -8,9 +11,9 @@ Utopia WebSocket is a simple and lite abstraction layer around a WebSocket serve
 
 Although this library is part of the [Utopia Framework](https://github.com/utopia-php/framework) project it is dependency free and can be used as standalone with any other PHP project or framework.
 
-## Getting Started
+## Getting started
 
-Install using composer:
+Install using Composer:
 ```bash
 composer require utopia-php/websocket
 ```
@@ -46,9 +49,16 @@ $server->onClose(function (int $connection) {
 $server->start();
 ```
 
-## System Requirements
+## System requirements
 
 Utopia Framework requires PHP 8.0 or later. We recommend using the latest PHP version whenever possible.
+
+## Testing
+
+```sh
+composer test       # unit tests, with no servers
+composer test:e2e   # starts local Swoole and Workerman fixture servers
+```
 
 ## Copyright and license
 

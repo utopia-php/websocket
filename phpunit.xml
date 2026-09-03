@@ -1,19 +1,22 @@
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.0/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="true"
-         stopOnFailure="true"
-        >
+         cacheDirectory=".phpunit.cache"
+         failOnWarning="true"
+         failOnNotice="true">
     <testsuites>
-        <testsuite name="Unit">
-            <directory>./tests/unit/</directory>
+        <testsuite name="unit">
+            <directory>tests/Unit</directory>
         </testsuite>
-        <testsuite name="E2E">
-            <directory>./tests/e2e/</directory>
+        <testsuite name="e2e">
+            <directory>tests/E2E</directory>
         </testsuite>
     </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
 </phpunit>

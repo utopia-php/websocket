@@ -4,8 +4,8 @@ namespace Utopia\WebSocket\Adapter;
 
 use Utopia\WebSocket\Adapter;
 use Workerman\Connection\TcpConnection;
-use Workerman\Worker;
 use Workerman\Protocols\Http\Request;
+use Workerman\Worker;
 
 class Workerman extends Adapter
 {
@@ -32,7 +32,7 @@ class Workerman extends Adapter
     {
         Worker::runAll();
         $callable = ($this->callbackOnStart);
-        if (!is_callable($callable)) {
+        if (!\is_callable($callable)) {
             throw new \Exception();
         }
         \call_user_func($callable);
@@ -65,7 +65,7 @@ class Workerman extends Adapter
     public function onWorkerStart(callable $callback): self
     {
         $this->server->onWorkerStart = function (Worker $worker) use ($callback): void {
-            call_user_func($callback, $worker->id);
+            \call_user_func($callback, $worker->id);
         };
         return $this;
     }
@@ -73,7 +73,7 @@ class Workerman extends Adapter
     public function onWorkerStop(callable $callback): Adapter
     {
         $this->server->onWorkerStop = function (Worker $worker) use ($callback): void {
-            call_user_func($callback, $worker->id);
+            \call_user_func($callback, $worker->id);
         };
 
         return $this;
@@ -84,7 +84,7 @@ class Workerman extends Adapter
         $this->server->onConnect = function ($connection) use ($callback): void {
             $connection->onWebSocketConnect = function (TcpConnection $connection) use ($callback): void {
                 /** @var array<string> $_SERVER */
-                call_user_func($callback, $connection->id, $_SERVER);
+                \call_user_func($callback, $connection->id, $_SERVER);
             };
         };
 
@@ -102,7 +102,7 @@ class Workerman extends Adapter
     public function onClose(callable $callback): self
     {
         $this->server->onClose = function (TcpConnection $connection) use ($callback): void {
-            call_user_func($callback, $connection->id);
+            \call_user_func($callback, $connection->id);
         };
 
         return $this;
@@ -121,14 +121,14 @@ class Workerman extends Adapter
      */
     private function setupMessageHandler(): void
     {
-        $this->server->onMessage = function (TcpConnection $connection, $data) {
+        $this->server->onMessage = function (TcpConnection $connection, $data): void {
             if ($data instanceof Request) {
-                if (is_callable($this->callbackOnRequest)) {
-                    call_user_func($this->callbackOnRequest, $connection, $data);
+                if (\is_callable($this->callbackOnRequest)) {
+                    \call_user_func($this->callbackOnRequest, $connection, $data);
                 }
-            } elseif (is_string($data)) {
-                if (is_callable($this->callbackOnMessage)) {
-                    call_user_func($this->callbackOnMessage, $connection->id, $data);
+            } elseif (\is_string($data)) {
+                if (\is_callable($this->callbackOnMessage)) {
+                    \call_user_func($this->callbackOnMessage, $connection->id, $data);
                 }
             }
         };

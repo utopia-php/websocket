@@ -25,7 +25,6 @@ class Client
     private ?\Closure $onPong = null;
 
     /**
-     * @param string $url
      * @param array{headers?: array<string, string>, timeout?: float} $options
      */
     public function __construct(string $url, array $options = [])
@@ -59,7 +58,7 @@ class Client
             'max_frame_size' => 32 * 1024 * 1024, // 32MB max frame size
         ]);
 
-        if (!empty($this->headers)) {
+        if ($this->headers !== []) {
             $this->client->setHeaders($this->headers);
         }
 
@@ -67,7 +66,7 @@ class Client
 
         if (!$success) {
             $error = new \RuntimeException(
-                "WebSocket connection failed: {$this->client->errCode} - {$this->client->errMsg}"
+                "WebSocket connection failed: {$this->client->errCode} - {$this->client->errMsg}",
             );
             $this->emit('error', $error);
             throw $error;
@@ -92,11 +91,11 @@ class Client
                         continue;
                     }
                     throw new \RuntimeException(
-                        "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
+                        "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}",
                     );
                 }
 
-                if ($frame === "") {
+                if ($frame === '') {
                     continue;
                 }
 
@@ -149,7 +148,7 @@ class Client
 
         if ($success === false) {
             $error = new \RuntimeException(
-                "Failed to send data: {$this->client->errCode} - {$this->client->errMsg}"
+                "Failed to send data: {$this->client->errCode} - {$this->client->errMsg}",
             );
             $this->emit('error', $error);
             throw $error;
@@ -203,10 +202,6 @@ class Client
         return $this;
     }
 
-    /**
-     * @param string $event
-     * @param mixed $data
-     */
     private function emit(string $event, mixed $data = null): void
     {
         $handler = match ($event) {
@@ -219,7 +214,7 @@ class Client
             default => null
         };
 
-        if ($handler !== null) {
+        if ($handler instanceof \Closure) {
             $handler($data);
         }
     }
@@ -238,11 +233,11 @@ class Client
                 return null;
             }
             throw new \RuntimeException(
-                "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}"
+                "Failed to receive data: {$this->client->errCode} - {$this->client->errMsg}",
             );
         }
 
-        if ($frame === "") {
+        if ($frame === '') {
             return null;
         }
 

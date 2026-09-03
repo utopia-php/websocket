@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Utopia\WebSocket\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Utopia\WebSocket\Client;
 
-class ClientTest extends TestCase
+final class ClientTest extends TestCase
 {
     private Client $client;
     private string $testUrl = 'ws://localhost:8080';
@@ -31,7 +33,7 @@ class ClientTest extends TestCase
     {
         $options = [
             'headers' => ['Authorization' => 'Bearer token'],
-            'timeout' => 60
+            'timeout' => 60,
         ];
         $client = new Client($this->testUrl, $options);
         $this->assertInstanceOf(Client::class, $client);
@@ -39,43 +41,14 @@ class ClientTest extends TestCase
 
     public function testEventHandlers(): void
     {
-        $messageReceived = false;
-        $this->client->onMessage(function ($data) use (&$messageReceived) {
-            $messageReceived = true;
-        });
+        $callback = static function (): void {};
 
-        $closeReceived = false;
-        $this->client->onClose(function () use (&$closeReceived) {
-            $closeReceived = true;
-        });
-
-        $errorReceived = false;
-        $this->client->onError(function ($error) use (&$errorReceived) {
-            $errorReceived = true;
-        });
-
-        $openReceived = false;
-        $this->client->onOpen(function () use (&$openReceived) {
-            $openReceived = true;
-        });
-
-        $pingReceived = false;
-        $this->client->onPing(function ($data) use (&$pingReceived) {
-            $pingReceived = true;
-        });
-
-        $pongReceived = false;
-        $this->client->onPong(function ($data) use (&$pongReceived) {
-            $pongReceived = true;
-        });
-
-        // Verify that all handlers are properly set
-        $this->assertIsCallable([$this->client, 'onMessage']);
-        $this->assertIsCallable([$this->client, 'onClose']);
-        $this->assertIsCallable([$this->client, 'onError']);
-        $this->assertIsCallable([$this->client, 'onOpen']);
-        $this->assertIsCallable([$this->client, 'onPing']);
-        $this->assertIsCallable([$this->client, 'onPong']);
+        $this->assertSame($this->client, $this->client->onMessage($callback));
+        $this->assertSame($this->client, $this->client->onClose($callback));
+        $this->assertSame($this->client, $this->client->onError($callback));
+        $this->assertSame($this->client, $this->client->onOpen($callback));
+        $this->assertSame($this->client, $this->client->onPing($callback));
+        $this->assertSame($this->client, $this->client->onPong($callback));
     }
 
     public function testIsConnected(): void
@@ -103,7 +76,7 @@ class ClientTest extends TestCase
             $messageReceived = false;
             $testMessage = 'Hello WebSocket!';
 
-            $this->client->onMessage(function ($data) use (&$messageReceived, $testMessage) {
+            $this->client->onMessage(function ($data) use (&$messageReceived, $testMessage): void {
                 $messageReceived = true;
                 $this->assertEquals($testMessage, $data);
             });
@@ -113,11 +86,9 @@ class ClientTest extends TestCase
             $mockFrame->opcode = WEBSOCKET_OPCODE_TEXT;
             $mockFrame->data = $testMessage;
 
-            $swooleClient = $this->getMockBuilder(\Swoole\Coroutine\Http\Client::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $swooleClient = $this->createMock(\Swoole\Coroutine\Http\Client::class);
         } catch (\Error $e) {
-            if (strpos($e->getMessage(), 'enum_exists') !== false) {
+            if (str_contains($e->getMessage(), 'enum_exists')) {
                 $this->markTestSkipped('Test skipped due to enum_exists compatibility issue');
             }
             throw $e;
@@ -133,11 +104,9 @@ class ClientTest extends TestCase
         $reflectionClass = new \ReflectionClass(Client::class);
 
         $connectedProperty = $reflectionClass->getProperty('connected');
-        $connectedProperty->setAccessible(true);
         $connectedProperty->setValue($this->client, true);
 
         $clientProperty = $reflectionClass->getProperty('client');
-        $clientProperty->setAccessible(true);
         $clientProperty->setValue($this->client, $swooleClient);
 
         $this->client->listen();
@@ -150,16 +119,14 @@ class ClientTest extends TestCase
     {
         try {
             $errorReceived = false;
-            $this->client->onError(function ($error) use (&$errorReceived) {
+            $this->client->onError(function ($error) use (&$errorReceived): void {
                 $errorReceived = true;
                 $this->assertInstanceOf(\RuntimeException::class, $error);
             });
 
-            $swooleClient = $this->getMockBuilder(\Swoole\Coroutine\Http\Client::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $swooleClient = $this->createMock(\Swoole\Coroutine\Http\Client::class);
         } catch (\Error $e) {
-            if (strpos($e->getMessage(), 'enum_exists') !== false) {
+            if (str_contains($e->getMessage(), 'enum_exists')) {
                 $this->markTestSkipped('Test skipped due to enum_exists compatibility issue');
             }
             throw $e;
@@ -176,11 +143,9 @@ class ClientTest extends TestCase
         $reflectionClass = new \ReflectionClass(Client::class);
 
         $connectedProperty = $reflectionClass->getProperty('connected');
-        $connectedProperty->setAccessible(true);
         $connectedProperty->setValue($this->client, true);
 
         $clientProperty = $reflectionClass->getProperty('client');
-        $clientProperty->setAccessible(true);
         $clientProperty->setValue($this->client, $swooleClient);
 
         $this->client->listen();
