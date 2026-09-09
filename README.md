@@ -49,6 +49,20 @@ $server->onClose(function (int $connection) {
 $server->start();
 ```
 
+## Slow clients
+
+The Swoole adapter allows sends to wait for a full output buffer to drain, with a five-second timeout for each wait. This prevents pending sends from waiting indefinitely after a client disconnects, including the failure described in [Swoole issue #6196](https://github.com/swoole/swoole-src/issues/6196).
+
+Configure the timeout in the constructor:
+
+```php
+$adapter = new WebSocket\Adapter\Swoole(sendTimeout: 2.0); // Seconds; must be finite and greater than zero.
+```
+
+When a push fails, including on timeout, the adapter resets the connection and discards queued output. Clients must reconnect and refresh application state to recover missed events. Brief stalls can recover if the buffer drains before the timeout.
+
+The timeout applies to each Swoole wait, not the total lifetime of a send; a retry can start another wait. It does not cap pending bytes or change Swoole's output buffer size. Applications sending large bursts should also limit queued work or reduce update frequency.
+
 ## System requirements
 
 Utopia Framework requires PHP 8.0 or later. We recommend using the latest PHP version whenever possible.

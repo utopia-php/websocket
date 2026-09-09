@@ -11,20 +11,33 @@ use Utopia\WebSocket\Adapter;
 
 class Swoole extends Adapter
 {
+    public const DEFAULT_SEND_TIMEOUT = 5.0;
+
     protected Server $server;
 
     protected string $host;
 
     protected int $port;
 
-    public function __construct(string $host = '0.0.0.0', int $port = 80)
-    {
+    /**
+     * @param float $sendTimeout Positive finite seconds for each wait on a full output buffer.
+     */
+    public function __construct(
+        string $host = '0.0.0.0',
+        int $port = 80,
+        float $sendTimeout = self::DEFAULT_SEND_TIMEOUT,
+    ) {
+        if (!is_finite($sendTimeout) || $sendTimeout <= 0) {
+            throw new \InvalidArgumentException('Send timeout must be a finite positive number of seconds');
+        }
+
         parent::__construct($host, $port);
 
         $this->server = new Server($this->host, $this->port);
 
         // Set maximum connections to Swoole's limit of 1 Million
         $this->config['max_connection'] = 1_000_000;
+        $this->config['send_timeout'] = $sendTimeout;
     }
 
     public function start(): void
@@ -45,17 +58,25 @@ class Swoole extends Adapter
             $flags |= SWOOLE_WEBSOCKET_FLAG_COMPRESS;
         }
 
-        foreach ($connections as $connection) {
-            go(function () use ($connection, $message, $flags): void {
-                if ($this->server->exist($connection) && $this->server->isEstablished($connection)) {
-                    $this->server->push(
-                        $connection,
+        foreach ($connections as $sessionId) {
+            go(function () use ($sessionId, $message, $flags): void {
+                if ($this->server->isEstablished($sessionId)) {
+                    $pushed = $this->server->push(
+                        $sessionId,
                         $message,
                         SWOOLE_WEBSOCKET_OPCODE_TEXT,
                         $flags,
                     );
+
+                    // push() can yield. Swoole verifies the session ID here,
+                    // even if another client has reused the underlying socket fd.
+                    if (!$pushed && $this->server->exist($sessionId)) {
+                        // Discard queued output: a graceful close would keep
+                        // waiting for the same client to drain its buffer.
+                        $this->server->close($sessionId, true);
+                    }
                 } else {
-                    $this->server->close($connection);
+                    $this->server->close($sessionId);
                 }
             });
         }

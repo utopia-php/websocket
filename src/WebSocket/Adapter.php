@@ -7,7 +7,7 @@ namespace Utopia\WebSocket;
 abstract class Adapter
 {
     /**
-    * @var array<int|string,bool|int|string>
+    * @var array<int|string,bool|int|float|string>
     */
 
     protected array $config = [];
